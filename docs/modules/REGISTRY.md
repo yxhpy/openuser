@@ -297,6 +297,29 @@ This registry tracks all implemented modules to prevent duplication and facilita
   - Automatic output path generation
   - Resource cleanup
 
+### SadTalker Integration
+- **Path**: `src/models/sadtalker.py`
+- **Purpose**: Talking head generation using SadTalker model
+- **Status**: ✅ Implemented (100% test coverage)
+- **Test Coverage**: 100%
+- **Dependencies**: torch, opencv-python, numpy
+- **API**:
+  - `SadTalkerModel.__init__(device, model_path, fps, still_mode, preprocess, expression_scale) -> None`
+  - `SadTalkerModel.detect_faces(image) -> list[Tuple[int, int, int, int]]`
+  - `SadTalkerModel.preprocess_image(image_path) -> Tuple[np.ndarray, list[Tuple[int, int, int, int]]]`
+  - `SadTalkerModel.generate_video(image_path, audio_path, output_path) -> str`
+  - `SadTalkerModel.cleanup() -> None`
+- **Features**:
+  - Talking head video generation from static images
+  - Face detection and preprocessing
+  - Configurable FPS and expression scale
+  - Still mode for less head movement
+  - Multiple preprocessing methods (crop, resize, full)
+  - Device management (CPU/GPU)
+  - Lazy model loading
+  - Automatic output path generation
+  - Resource cleanup
+
 ### Voice Cloning
 - **Path**: `src/models/voice_cloning.py`
 - **Purpose**: TTS model integration for voice cloning
@@ -532,7 +555,7 @@ This registry tracks all implemented modules to prevent duplication and facilita
 
 ## Last Updated
 
-2026-02-02 - Phase 2.2 Face Animation in progress with GFPGAN integration
+2026-02-02 - Phase 2.2 Face Animation in progress with SadTalker integration
 - Plugin Manager: ✅ Implemented
 - Agent Manager: ✅ Implemented
 - Config Manager: ✅ Implemented
@@ -546,3 +569,4 @@ This registry tracks all implemented modules to prevent duplication and facilita
 - FastAPI Application: ✅ Implemented
 - Wav2Lip Integration: ✅ Implemented (Lip-sync video generation)
 - GFPGAN Integration: ✅ Implemented (Face enhancement)
+- SadTalker Integration: ✅ Implemented (Talking head generation)
