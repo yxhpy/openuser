@@ -61,11 +61,14 @@
 - [x] API documentation (OpenAPI/Swagger)
 
 ### 3.2 Core Endpoints
-- [ ] `/api/v1/digital-human/create` - Create digital human
-- [ ] `/api/v1/digital-human/generate` - Generate video
-- [ ] `/api/v1/plugins/list` - List plugins
-- [ ] `/api/v1/plugins/install` - Install plugin
-- [ ] `/api/v1/plugins/reload` - Hot-reload plugin
+- [x] `/api/v1/digital-human/create` - Create digital human
+- [x] `/api/v1/digital-human/generate` - Generate video
+- [x] `/api/v1/digital-human/list` - List digital humans
+- [x] `/api/v1/digital-human/{id}` - Get digital human details
+- [x] `/api/v1/digital-human/{id}` - Delete digital human
+- [x] `/api/v1/plugins/list` - List plugins
+- [x] `/api/v1/plugins/install` - Install plugin
+- [x] `/api/v1/plugins/reload` - Hot-reload plugin
 - [ ] `/api/v1/agents/list` - List agents
 - [ ] `/api/v1/agents/update` - Update agent
 - [ ] `/api/v1/scheduler/create` - Create scheduled task

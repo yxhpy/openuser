@@ -234,3 +234,36 @@ class PluginReloadResponse(BaseModel):
     name: str = Field(..., description="Reloaded plugin name")
     version: str = Field(..., description="Reloaded plugin version")
     message: str = Field(..., description="Success message")
+
+
+# Agent Schemas
+
+class AgentCreateRequest(BaseModel):
+    """Request schema for creating an agent."""
+
+    name: str = Field(..., min_length=1, max_length=100, description="Agent name")
+    system_prompt: str = Field(..., min_length=1, description="Agent system prompt")
+    capabilities: List[str] = Field(default_factory=list, description="Agent capabilities")
+
+
+class AgentUpdateRequest(BaseModel):
+    """Request schema for updating an agent."""
+
+    system_prompt: Optional[str] = Field(default=None, description="New system prompt")
+    capabilities: Optional[List[str]] = Field(default=None, description="New capabilities")
+
+
+class AgentResponse(BaseModel):
+    """Response schema for agent information."""
+
+    name: str = Field(..., description="Agent name")
+    system_prompt: str = Field(..., description="Agent system prompt")
+    capabilities: List[str] = Field(..., description="Agent capabilities")
+
+
+class AgentListResponse(BaseModel):
+    """Response schema for listing agents."""
+
+    agents: List[AgentResponse] = Field(..., description="List of agents")
+    total: int = Field(..., description="Total number of agents")
+

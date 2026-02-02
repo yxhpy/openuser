@@ -8,6 +8,7 @@ from src.api.voice import router as voice_router
 from src.api.auth import router as auth_router
 from src.api.digital_human import router as digital_human_router
 from src.api.plugins import router as plugins_router
+from src.api.agents import router as agents_router
 
 
 def create_app() -> FastAPI:
@@ -39,6 +40,7 @@ def create_app() -> FastAPI:
     app.include_router(voice_router)
     app.include_router(digital_human_router)
     app.include_router(plugins_router)
+    app.include_router(agents_router)
 
     @app.get("/")
     async def root():
