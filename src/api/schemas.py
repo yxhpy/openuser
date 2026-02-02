@@ -1,6 +1,7 @@
 """
 API request and response schemas using Pydantic.
 """
+from datetime import datetime
 from typing import Optional, List, Dict, Any
 from pydantic import BaseModel, Field, field_validator, EmailStr
 
@@ -127,3 +128,109 @@ class UserResponse(BaseModel):
     is_active: bool = Field(..., description="Whether user is active")
     is_superuser: bool = Field(..., description="Whether user is superuser")
     created_at: str = Field(..., description="Account creation timestamp")
+
+
+# Digital Human Schemas
+
+class DigitalHumanCreateRequest(BaseModel):
+    """Request schema for creating a digital human."""
+
+    name: str = Field(..., min_length=1, max_length=100, description="Digital human name")
+    description: Optional[str] = Field(default=None, description="Digital human description")
+    voice_model_path: Optional[str] = Field(default=None, description="Path to voice model")
+
+
+class DigitalHumanResponse(BaseModel):
+    """Response schema for digital human."""
+
+    id: int = Field(..., description="Digital human ID")
+    user_id: int = Field(..., description="Owner user ID")
+    name: str = Field(..., description="Digital human name")
+    description: Optional[str] = Field(default=None, description="Digital human description")
+    image_path: Optional[str] = Field(default=None, description="Path to image file")
+    voice_model_path: Optional[str] = Field(default=None, description="Path to voice model")
+    video_path: Optional[str] = Field(default=None, description="Path to generated video")
+    is_active: bool = Field(..., description="Whether digital human is active")
+    created_at: datetime = Field(..., description="Creation timestamp")
+    updated_at: datetime = Field(..., description="Last update timestamp")
+
+    class Config:
+        from_attributes = True
+
+
+class DigitalHumanListResponse(BaseModel):
+    """Response schema for listing digital humans."""
+
+    digital_humans: List[DigitalHumanResponse] = Field(..., description="List of digital humans")
+    total: int = Field(..., description="Total number of digital humans")
+
+
+class VideoGenerateRequest(BaseModel):
+    """Request schema for video generation."""
+
+    digital_human_id: int = Field(..., description="Digital human ID")
+    text: Optional[str] = Field(default=None, description="Text to synthesize (for text-to-video)")
+    mode: str = Field(default="enhanced_talking_head", description="Generation mode")
+
+    @field_validator("mode")
+    @classmethod
+    def validate_mode(cls, v: str) -> str:
+        """Validate generation mode."""
+        allowed = ["lipsync", "talking_head", "enhanced_lipsync", "enhanced_talking_head"]
+        if v not in allowed:
+            raise ValueError(f"Mode must be one of {allowed}")
+        return v
+
+
+class VideoGenerateResponse(BaseModel):
+    """Response schema for video generation."""
+
+    video_path: str = Field(..., description="Path to generated video")
+    digital_human_id: int = Field(..., description="Digital human ID")
+    mode: str = Field(..., description="Generation mode used")
+    message: str = Field(..., description="Success message")
+
+
+# Plugin Schemas
+
+class PluginInfo(BaseModel):
+    """Plugin information schema."""
+
+    name: str = Field(..., description="Plugin name")
+    version: str = Field(..., description="Plugin version")
+    dependencies: List[str] = Field(default_factory=list, description="Plugin dependencies")
+
+
+class PluginListResponse(BaseModel):
+    """Response schema for listing plugins."""
+
+    plugins: List[PluginInfo] = Field(..., description="List of plugins")
+    total: int = Field(..., description="Total number of plugins")
+
+
+class PluginInstallRequest(BaseModel):
+    """Request schema for installing a plugin."""
+
+    name: str = Field(..., min_length=1, max_length=100, description="Plugin name to install")
+
+
+class PluginInstallResponse(BaseModel):
+    """Response schema for plugin installation."""
+
+    name: str = Field(..., description="Installed plugin name")
+    version: str = Field(..., description="Installed plugin version")
+    message: str = Field(..., description="Success message")
+
+
+class PluginReloadRequest(BaseModel):
+    """Request schema for reloading a plugin."""
+
+    name: str = Field(..., min_length=1, max_length=100, description="Plugin name to reload")
+
+
+class PluginReloadResponse(BaseModel):
+    """Response schema for plugin reload."""
+
+    name: str = Field(..., description="Reloaded plugin name")
+    version: str = Field(..., description="Reloaded plugin version")
+    message: str = Field(..., description="Success message")
