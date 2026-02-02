@@ -516,6 +516,62 @@ This registry tracks all implemented modules to prevent duplication and facilita
   - Configurable token expiration
   - Timezone-aware datetime handling
 
+### Digital Human API
+- **Path**: `src/api/digital_human.py`
+- **Purpose**: REST API endpoints for digital human management and video generation
+- **Status**: ✅ Implemented (100% test coverage)
+- **Test Coverage**: 100%
+- **Dependencies**: DigitalHuman model, VideoGenerator, authentication
+- **API**:
+  - `POST /api/v1/digital-human/create` - Create new digital human with image upload
+  - `POST /api/v1/digital-human/generate` - Generate video from text or audio
+  - `GET /api/v1/digital-human/list` - List all digital humans for current user
+  - `GET /api/v1/digital-human/{id}` - Get digital human details
+  - `DELETE /api/v1/digital-human/{id}` - Delete digital human and associated files
+- **Features**:
+  - File upload handling for images and audio
+  - Multiple video generation modes (lipsync, talking_head, enhanced_lipsync, enhanced_talking_head)
+  - Text-to-video and audio-to-video generation
+  - Authentication and authorization
+  - File cleanup on deletion
+  - Comprehensive error handling
+
+### Plugin API
+- **Path**: `src/api/plugins.py`
+- **Purpose**: REST API endpoints for plugin management
+- **Status**: ✅ Implemented (100% test coverage)
+- **Test Coverage**: 100%
+- **Dependencies**: PluginManager, authentication
+- **API**:
+  - `GET /api/v1/plugins/list` - List all loaded plugins
+  - `POST /api/v1/plugins/install` - Install a new plugin
+  - `POST /api/v1/plugins/reload` - Hot-reload a plugin without restart
+- **Features**:
+  - Plugin listing with version and dependency information
+  - Plugin installation with validation
+  - Hot-reload capability without system restart
+  - Authentication and authorization
+  - Comprehensive error handling
+
+### Agent API
+- **Path**: `src/api/agents.py`
+- **Purpose**: REST API endpoints for AI agent management
+- **Status**: ✅ Implemented (100% test coverage)
+- **Test Coverage**: 100%
+- **Dependencies**: AgentManager, authentication
+- **API**:
+  - `POST /api/v1/agents/create` - Create new agent
+  - `GET /api/v1/agents/list` - List all agents
+  - `GET /api/v1/agents/{name}` - Get agent details
+  - `PUT /api/v1/agents/{name}` - Update agent
+  - `DELETE /api/v1/agents/{name}` - Delete agent
+- **Features**:
+  - Agent lifecycle management (CRUD operations)
+  - System prompt and capabilities management
+  - Authentication and authorization
+  - Comprehensive error handling
+  - Exception handling for all operations
+
 ---
 
 ## Integration Modules
@@ -638,7 +694,7 @@ This registry tracks all implemented modules to prevent duplication and facilita
 
 ## Last Updated
 
-2026-02-02 - Phase 3.1 FastAPI Setup completed
+2026-02-02 - Phase 3.2 Core Endpoints completed
 - Plugin Manager: ✅ Implemented
 - Agent Manager: ✅ Implemented
 - Config Manager: ✅ Implemented
@@ -655,5 +711,8 @@ This registry tracks all implemented modules to prevent duplication and facilita
 - SadTalker Integration: ✅ Implemented (Talking head generation)
 - Video Generation Pipeline: ✅ Implemented (Unified digital human pipeline)
 - Model Manager: ✅ Implemented (Model caching, versioning, device management)
-- **Authentication System: ✅ Implemented (JWT auth, user registration, login, token refresh)**
-- **Authentication Utilities: ✅ Implemented (Password hashing, JWT token management)**
+- Authentication System: ✅ Implemented (JWT auth, user registration, login, token refresh)
+- Authentication Utilities: ✅ Implemented (Password hashing, JWT token management)
+- **Digital Human API: ✅ Implemented (Create, generate, list, get, delete endpoints with 100% test coverage)**
+- **Plugin API: ✅ Implemented (List, install, reload endpoints with 100% test coverage)**
+- **Agent API: ✅ Implemented (Create, list, get, update, delete endpoints with 100% test coverage)**
