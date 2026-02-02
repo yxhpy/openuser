@@ -134,11 +134,13 @@ dmypy.json
 Thumbs.db
 
 # Project specific
-models/
+# Model files (weights, checkpoints)
 *.pth
 *.pt
 *.ckpt
 *.safetensors
+# Exclude downloaded model directories but not src/models/
+/models/
 uploads/
 outputs/
 temp/
