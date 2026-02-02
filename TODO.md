@@ -42,7 +42,7 @@
 
 ### 2.2 Face Animation
 - [x] Integrate Wav2Lip for lip-sync
-- [ ] Integrate GFPGAN for face enhancement
+- [x] Integrate GFPGAN for face enhancement
 - [ ] Integrate SadTalker for talking head generation
 - [ ] Implement video generation pipeline
 
