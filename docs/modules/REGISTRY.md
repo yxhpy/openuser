@@ -572,6 +572,28 @@ This registry tracks all implemented modules to prevent duplication and facilita
   - Comprehensive error handling
   - Exception handling for all operations
 
+### Scheduler API
+- **Path**: `src/api/scheduler.py`
+- **Purpose**: REST API endpoints for task scheduling and management
+- **Status**: ✅ Implemented (100% test coverage)
+- **Test Coverage**: 100%
+- **Dependencies**: Task model, authentication, database
+- **API**:
+  - `POST /api/v1/scheduler/create` - Create new scheduled task
+  - `GET /api/v1/scheduler/list` - List all tasks (with filters)
+  - `GET /api/v1/scheduler/{task_id}` - Get task details
+  - `PUT /api/v1/scheduler/{task_id}` - Update task
+  - `DELETE /api/v1/scheduler/{task_id}` - Delete task
+- **Features**:
+  - Full CRUD operations for task management
+  - Task filtering by status and type
+  - Cron schedule support
+  - Task parameters and results storage (JSON)
+  - Task status tracking (pending, running, completed, failed, cancelled)
+  - Task types (video_generation, voice_synthesis, face_animation, etc.)
+  - Authentication and authorization
+  - Comprehensive error handling
+
 ---
 
 ## Integration Modules
@@ -716,3 +738,4 @@ This registry tracks all implemented modules to prevent duplication and facilita
 - **Digital Human API: ✅ Implemented (Create, generate, list, get, delete endpoints with 100% test coverage)**
 - **Plugin API: ✅ Implemented (List, install, reload endpoints with 100% test coverage)**
 - **Agent API: ✅ Implemented (Create, list, get, update, delete endpoints with 100% test coverage)**
+- **Scheduler API: ✅ Implemented (Create, list, get, update, delete endpoints with 100% test coverage)**

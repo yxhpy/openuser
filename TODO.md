@@ -69,10 +69,12 @@
 - [x] `/api/v1/plugins/list` - List plugins
 - [x] `/api/v1/plugins/install` - Install plugin
 - [x] `/api/v1/plugins/reload` - Hot-reload plugin
-- [ ] `/api/v1/agents/list` - List agents
-- [ ] `/api/v1/agents/update` - Update agent
-- [ ] `/api/v1/scheduler/create` - Create scheduled task
-- [ ] `/api/v1/scheduler/list` - List tasks
+- [x] `/api/v1/agents/list` - List agents
+- [x] `/api/v1/agents/create` - Create agent
+- [x] `/api/v1/agents/{name}` - Get/Update/Delete agent
+- [x] `/api/v1/scheduler/create` - Create scheduled task
+- [x] `/api/v1/scheduler/list` - List tasks
+- [x] `/api/v1/scheduler/{task_id}` - Get/Update/Delete task
 
 ### 3.3 WebSocket Support
 - [ ] Real-time progress updates
