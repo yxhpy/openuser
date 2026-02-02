@@ -1,0 +1,23 @@
+{
+  "hooks": {
+    "pre-commit": {
+      "enabled": false,
+      "description": "Run tests before committing",
+      "command": "pytest --cov=src --cov-fail-under=100 -q",
+      "note": "Enable this to ensure all commits have 100% test coverage"
+    },
+    "post-commit": {
+      "enabled": false,
+      "description": "Update documentation after commit",
+      "command": "./.claude/scripts/update-registry.sh",
+      "note": "Enable this to automatically update docs after commits"
+    },
+    "pre-push": {
+      "enabled": false,
+      "description": "Run full test suite before pushing",
+      "command": "pytest --cov=src --cov-fail-under=100",
+      "note": "Enable this to ensure all pushes pass tests"
+    }
+  },
+  "note": "Hooks are disabled by default. Enable them by setting 'enabled': true"
+}

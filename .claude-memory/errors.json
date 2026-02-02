@@ -1,0 +1,32 @@
+{
+  "errors": [],
+  "solutions": {},
+  "patterns": [
+    {
+      "error_type": "ImportError",
+      "pattern": "No module named",
+      "solution": "Install missing dependency with pip install",
+      "prevention": "Check requirements.txt and ensure all dependencies are installed"
+    },
+    {
+      "error_type": "TestFailure",
+      "pattern": "Coverage failure: total of .* is less than fail-under=100",
+      "solution": "Add tests for uncovered code paths",
+      "prevention": "Write tests alongside code, use TDD approach"
+    },
+    {
+      "error_type": "DatabaseError",
+      "pattern": "relation .* does not exist",
+      "solution": "Run database migrations: alembic upgrade head",
+      "prevention": "Always run migrations after pulling changes"
+    },
+    {
+      "error_type": "RedisError",
+      "pattern": "Connection refused",
+      "solution": "Start Redis server: redis-server",
+      "prevention": "Ensure Redis is running before starting application"
+    }
+  ],
+  "lastUpdated": "2026-02-02T22:30:00Z",
+  "note": "This file tracks errors and their solutions for automatic learning"
+}

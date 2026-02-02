@@ -1,0 +1,41 @@
+{
+  "python": {
+    "version": "3.13.9",
+    "venv_path": "venv",
+    "activation_command": "source venv/bin/activate",
+    "test_command": "pytest --cov=src --cov-report=term-missing --cov-fail-under=100",
+    "coverage_command": "pytest --cov=src --cov-report=html",
+    "install_command": "pip install -e \".[dev]\"",
+    "format_command": "black src tests",
+    "lint_command": "flake8 src tests",
+    "type_check_command": "mypy src",
+    "last_error": null
+  },
+  "git": {
+    "default_branch": "main",
+    "remote": "origin",
+    "auto_push": false,
+    "last_error": null
+  },
+  "database": {
+    "type": "postgresql",
+    "migration_command": "alembic upgrade head",
+    "last_error": null
+  },
+  "redis": {
+    "url": "redis://localhost:6379/0",
+    "last_error": null
+  },
+  "api": {
+    "host": "0.0.0.0",
+    "port": 8000,
+    "start_command": "uvicorn src.api.main:app --reload",
+    "last_error": null
+  },
+  "models": {
+    "device": "cpu",
+    "model_path": "models/",
+    "last_error": null
+  },
+  "lastUpdated": "2026-02-02T22:30:00Z"
+}
