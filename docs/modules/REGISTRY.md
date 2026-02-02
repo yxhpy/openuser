@@ -253,6 +253,28 @@ This registry tracks all implemented modules to prevent duplication and facilita
   - Full preprocessing pipeline
   - Device management (CPU/GPU)
 
+### Wav2Lip Integration
+- **Path**: `src/models/wav2lip.py`
+- **Purpose**: Lip-sync video generation using Wav2Lip model
+- **Status**: ✅ Implemented (100% test coverage)
+- **Test Coverage**: 100%
+- **Dependencies**: torch, opencv-python, numpy
+- **API**:
+  - `Wav2LipModel.__init__(device, model_path, face_det_batch_size, wav2lip_batch_size, fps, resize_factor) -> None`
+  - `Wav2LipModel.detect_faces(image) -> list[Tuple[int, int, int, int]]`
+  - `Wav2LipModel.preprocess_image(image_path) -> Tuple[np.ndarray, list[Tuple[int, int, int, int]]]`
+  - `Wav2LipModel.generate_video(face_path, audio_path, output_path) -> str`
+  - `Wav2LipModel.cleanup() -> None`
+- **Features**:
+  - Lip-sync video generation from images or videos
+  - Face detection and preprocessing
+  - Video frame extraction and processing
+  - Audio-video synchronization
+  - Device management (CPU/GPU)
+  - Lazy model loading
+  - Automatic output path generation
+  - Resource cleanup
+
 ### Voice Cloning
 - **Path**: `src/models/voice_cloning.py`
 - **Purpose**: TTS model integration for voice cloning
@@ -488,7 +510,7 @@ This registry tracks all implemented modules to prevent duplication and facilita
 
 ## Last Updated
 
-2026-02-02 - Phase 2.1 Voice Processing completed with 100% test coverage
+2026-02-02 - Phase 2.2 Face Animation started with Wav2Lip integration
 - Plugin Manager: ✅ Implemented
 - Agent Manager: ✅ Implemented
 - Config Manager: ✅ Implemented
@@ -500,3 +522,4 @@ This registry tracks all implemented modules to prevent duplication and facilita
 - Audio Preprocessing: ✅ Implemented
 - Voice API: ✅ Implemented (Real-time synthesis endpoints)
 - FastAPI Application: ✅ Implemented
+- Wav2Lip Integration: ✅ Implemented (Lip-sync video generation)

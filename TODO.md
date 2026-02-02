@@ -41,7 +41,7 @@
 - [x] Real-time voice synthesis API
 
 ### 2.2 Face Animation
-- [ ] Integrate Wav2Lip for lip-sync
+- [x] Integrate Wav2Lip for lip-sync
 - [ ] Integrate GFPGAN for face enhancement
 - [ ] Integrate SadTalker for talking head generation
 - [ ] Implement video generation pipeline
