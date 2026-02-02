@@ -1,0 +1,55 @@
+"""
+Main FastAPI application for OpenUser Digital Human System.
+"""
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+
+from src.api.voice import router as voice_router
+
+
+def create_app() -> FastAPI:
+    """
+    Create and configure FastAPI application.
+
+    Returns:
+        Configured FastAPI application instance
+    """
+    app = FastAPI(
+        title="OpenUser API",
+        description="Intelligent Digital Human System API",
+        version="0.1.0",
+        docs_url="/docs",
+        redoc_url="/redoc"
+    )
+
+    # Configure CORS
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],  # Configure appropriately for production
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+
+    # Include routers
+    app.include_router(voice_router)
+
+    @app.get("/")
+    async def root():
+        """Root endpoint."""
+        return {
+            "message": "OpenUser API",
+            "version": "0.1.0",
+            "docs": "/docs"
+        }
+
+    @app.get("/health")
+    async def health():
+        """Health check endpoint."""
+        return {"status": "healthy"}
+
+    return app
+
+
+# Create app instance
+app = create_app()

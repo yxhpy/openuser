@@ -38,7 +38,7 @@
 - [x] Integrate TTS model (e.g., Coqui TTS, VITS)
 - [x] Implement voice cloning pipeline
 - [x] Audio preprocessing and enhancement
-- [ ] Real-time voice synthesis API
+- [x] Real-time voice synthesis API
 
 ### 2.2 Face Animation
 - [ ] Integrate Wav2Lip for lip-sync
