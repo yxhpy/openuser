@@ -336,6 +336,21 @@ class TestTokenRefresh:
         assert response.status_code == 401
         assert "inactive" in response.json()["detail"].lower()
 
+    def test_refresh_token_without_username(self, client):
+        """Test refresh token with token missing username in payload."""
+        from src.api.auth_utils import create_refresh_token
+
+        # Create refresh token without 'sub' field
+        token = create_refresh_token(data={"other_field": "value"})
+
+        response = client.post(
+            "/api/v1/auth/refresh",
+            json={"refresh_token": token}
+        )
+
+        assert response.status_code == 401
+        assert "Invalid refresh token" in response.json()["detail"]
+
 
 class TestGetCurrentUser:
     """Test get current user endpoint."""
@@ -408,3 +423,44 @@ class TestGetCurrentUser:
 
         assert response.status_code == 403
         assert "Inactive user" in response.json()["detail"]
+
+    def test_get_me_token_without_username(self, client, test_user):
+        """Test getting current user with token missing username in payload."""
+        from src.api.auth_utils import create_access_token
+
+        # Create token without 'sub' field
+        token = create_access_token(data={"other_field": "value"})
+
+        response = client.get(
+            "/api/v1/auth/me",
+            headers={"Authorization": f"Bearer {token}"}
+        )
+
+        assert response.status_code == 401
+        assert "Could not validate credentials" in response.json()["detail"]
+
+    def test_get_me_user_not_found(self, client, db_manager):
+        """Test getting current user when user doesn't exist in database."""
+        from src.api.auth_utils import create_access_token
+
+        # Create valid token for non-existent user
+        token = create_access_token(data={"sub": "nonexistent_user"})
+
+        response = client.get(
+            "/api/v1/auth/me",
+            headers={"Authorization": f"Bearer {token}"}
+        )
+
+        assert response.status_code == 401
+        assert "Could not validate credentials" in response.json()["detail"]
+
+    def test_get_db_not_configured(self):
+        """Test get_db when database manager is not configured."""
+        from src.api.auth import get_db, set_db_manager
+
+        # Clear database manager
+        set_db_manager(None)
+
+        # Try to get database session
+        with pytest.raises(RuntimeError, match="Database manager not configured"):
+            next(get_db())
