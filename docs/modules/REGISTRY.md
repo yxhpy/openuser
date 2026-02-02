@@ -320,6 +320,30 @@ This registry tracks all implemented modules to prevent duplication and facilita
   - Automatic output path generation
   - Resource cleanup
 
+### Video Generation Pipeline
+- **Path**: `src/models/video_generator.py`
+- **Purpose**: Unified pipeline integrating all digital human components
+- **Status**: ✅ Implemented (100% test coverage)
+- **Test Coverage**: 100%
+- **Dependencies**: VoiceSynthesizer, Wav2LipModel, GFPGANModel, SadTalkerModel
+- **API**:
+  - `VideoGenerator.__init__(device, mode, voice_config, wav2lip_config, gfpgan_config, sadtalker_config) -> None`
+  - `VideoGenerator.generate_from_text(text, image_path, output_path, speaker_wav) -> str`
+  - `VideoGenerator.generate_from_audio(image_path, audio_path, output_path) -> str`
+  - `VideoGenerator.cleanup() -> None`
+- **Generation Modes**:
+  - `LIPSYNC`: Wav2Lip only
+  - `TALKING_HEAD`: SadTalker only
+  - `ENHANCED_LIPSYNC`: Wav2Lip + GFPGAN
+  - `ENHANCED_TALKING_HEAD`: SadTalker + GFPGAN
+- **Features**:
+  - Text-to-video generation
+  - Audio-to-video generation
+  - Multiple generation modes
+  - Component orchestration
+  - Automatic cleanup
+  - Configurable pipeline stages
+
 ### Voice Cloning
 - **Path**: `src/models/voice_cloning.py`
 - **Purpose**: TTS model integration for voice cloning
@@ -555,7 +579,7 @@ This registry tracks all implemented modules to prevent duplication and facilita
 
 ## Last Updated
 
-2026-02-02 - Phase 2.2 Face Animation in progress with SadTalker integration
+2026-02-02 - Phase 2.2 Face Animation completed with video generation pipeline
 - Plugin Manager: ✅ Implemented
 - Agent Manager: ✅ Implemented
 - Config Manager: ✅ Implemented
@@ -570,3 +594,4 @@ This registry tracks all implemented modules to prevent duplication and facilita
 - Wav2Lip Integration: ✅ Implemented (Lip-sync video generation)
 - GFPGAN Integration: ✅ Implemented (Face enhancement)
 - SadTalker Integration: ✅ Implemented (Talking head generation)
+- Video Generation Pipeline: ✅ Implemented (Unified digital human pipeline)
