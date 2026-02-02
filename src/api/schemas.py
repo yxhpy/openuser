@@ -267,3 +267,55 @@ class AgentListResponse(BaseModel):
     agents: List[AgentResponse] = Field(..., description="List of agents")
     total: int = Field(..., description="Total number of agents")
 
+
+# Task/Scheduler Schemas
+
+class TaskCreateRequest(BaseModel):
+    """Request schema for creating a task."""
+
+    name: str = Field(..., min_length=1, max_length=200, description="Task name")
+    description: Optional[str] = Field(default=None, description="Task description")
+    task_type: str = Field(..., description="Task type (video_generation, voice_synthesis, etc.)")
+    schedule: Optional[str] = Field(default=None, description="Cron schedule expression")
+    params: Optional[Dict[str, Any]] = Field(default=None, description="Task parameters")
+
+
+class TaskUpdateRequest(BaseModel):
+    """Request schema for updating a task."""
+
+    name: Optional[str] = Field(default=None, min_length=1, max_length=200, description="Task name")
+    description: Optional[str] = Field(default=None, description="Task description")
+    schedule: Optional[str] = Field(default=None, description="Cron schedule expression")
+    params: Optional[Dict[str, Any]] = Field(default=None, description="Task parameters")
+    status: Optional[str] = Field(default=None, description="Task status")
+
+
+class TaskResponse(BaseModel):
+    """Response schema for task information."""
+
+    id: int = Field(..., description="Task ID")
+    user_id: int = Field(..., description="Owner user ID")
+    name: str = Field(..., description="Task name")
+    description: Optional[str] = Field(default=None, description="Task description")
+    task_type: str = Field(..., description="Task type")
+    schedule: Optional[str] = Field(default=None, description="Cron schedule expression")
+    params: Optional[Dict[str, Any]] = Field(default=None, description="Task parameters")
+    status: str = Field(..., description="Task status")
+    result: Optional[Dict[str, Any]] = Field(default=None, description="Task result")
+    error_message: Optional[str] = Field(default=None, description="Error message if failed")
+    started_at: Optional[datetime] = Field(default=None, description="Task start time")
+    completed_at: Optional[datetime] = Field(default=None, description="Task completion time")
+    created_at: datetime = Field(..., description="Creation timestamp")
+    updated_at: datetime = Field(..., description="Last update timestamp")
+
+    class Config:
+        from_attributes = True
+
+
+class TaskListResponse(BaseModel):
+    """Response schema for listing tasks."""
+
+    tasks: List[TaskResponse] = Field(..., description="List of tasks")
+    total: int = Field(..., description="Total number of tasks")
+
+

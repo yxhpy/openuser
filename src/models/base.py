@@ -51,3 +51,28 @@ class DatabaseManager:
     def get_session(self) -> Session:
         """Get a new database session"""
         return self.SessionLocal()
+
+
+# Global database manager instance
+_db_manager: DatabaseManager | None = None
+
+
+def get_db():
+    """
+    Get database session dependency for FastAPI.
+
+    Yields:
+        Database session
+    """
+    global _db_manager
+    if _db_manager is None:
+        _db_manager = DatabaseManager(
+            database_url="sqlite:///./test.db",  # TODO: Load from config
+            echo=False
+        )
+    session = _db_manager.get_session()
+    try:
+        yield session
+    finally:
+        session.close()
+
