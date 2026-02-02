@@ -1,0 +1,43 @@
+{
+  "project": {
+    "name": "openuser",
+    "version": "0.1.0",
+    "description": "Intelligent Digital Human System",
+    "language": "python",
+    "framework": "fastapi"
+  },
+  "skills": {
+    "autoTrigger": true,
+    "paths": [
+      ".claude/skills"
+    ]
+  },
+  "hooks": {
+    "enabled": true,
+    "configPath": ".claude/hooks/settings.json"
+  },
+  "agents": {
+    "enabled": true,
+    "paths": [
+      ".claude/agents"
+    ]
+  },
+  "memory": {
+    "enabled": true,
+    "path": ".claude-memory"
+  },
+  "testing": {
+    "framework": "pytest",
+    "coverage": {
+      "enabled": true,
+      "threshold": 100
+    },
+    "autoRun": true
+  },
+  "documentation": {
+    "autoUpdate": true,
+    "paths": [
+      "docs"
+    ]
+  }
+}

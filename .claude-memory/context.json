@@ -1,0 +1,80 @@
+{
+  "project": {
+    "name": "openuser",
+    "version": "0.1.0",
+    "created": "2026-02-02",
+    "language": "python",
+    "framework": "fastapi",
+    "description": "Intelligent Digital Human System with hot-reload plugins, self-evolving agents, and multi-platform integration"
+  },
+  "architecture": {
+    "pattern": "plugin-based",
+    "core_components": [
+      "plugin_manager",
+      "agent_manager",
+      "config_manager",
+      "digital_human_engine"
+    ],
+    "integrations": [
+      "feishu",
+      "wechat_work",
+      "web_interface"
+    ]
+  },
+  "modules": [],
+  "reusableComponents": [],
+  "commonPatterns": [
+    {
+      "name": "hot-reload",
+      "description": "Hot-reload plugins/skills/config without restart",
+      "implementation": "src/core/plugin_manager.py"
+    },
+    {
+      "name": "agent-self-update",
+      "description": "Agents can update themselves via prompts",
+      "implementation": "src/core/agent_manager.py"
+    }
+  ],
+  "decisions": [],
+  "techStack": {
+    "backend": "Python 3.10+",
+    "web_framework": "FastAPI",
+    "database": "PostgreSQL",
+    "cache": "Redis",
+    "task_queue": "Celery",
+    "testing": "pytest",
+    "digital_human": ["Wav2Lip", "GFPGAN", "SadTalker"]
+  },
+  "dependencies": {
+    "core": [
+      "fastapi",
+      "uvicorn",
+      "sqlalchemy",
+      "redis",
+      "celery",
+      "pydantic"
+    ],
+    "digital_human": [
+      "torch",
+      "torchvision",
+      "opencv-python",
+      "pillow",
+      "librosa",
+      "soundfile"
+    ],
+    "integrations": [
+      "httpx",
+      "websockets"
+    ],
+    "dev": [
+      "pytest",
+      "pytest-cov",
+      "pytest-asyncio",
+      "black",
+      "flake8",
+      "mypy"
+    ]
+  },
+  "currentPhase": "Phase 1: Core Infrastructure",
+  "nextMilestone": "Setup Python environment and core system"
+}
