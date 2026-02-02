@@ -105,18 +105,18 @@
 ## Phase 5: Integration Layer (Week 7-8)
 
 ### 5.1 Feishu Integration
-- [ ] Feishu bot setup
-- [ ] Webhook handler
-- [ ] Message parsing
-- [ ] Interactive cards
-- [ ] File upload/download
+- [x] Feishu bot setup
+- [x] Webhook handler
+- [x] Message parsing
+- [x] Interactive cards
+- [x] File upload/download
 
 ### 5.2 WeChat Work Integration
-- [ ] WeChat Work bot setup
-- [ ] Webhook handler
-- [ ] Message parsing
-- [ ] Media handling
-- [ ] Group chat support
+- [x] WeChat Work bot setup
+- [x] Webhook handler
+- [x] Message parsing
+- [x] Media handling
+- [x] Group chat support
 
 ### 5.3 Web Interface
 - [ ] Frontend setup (React/Vue)
