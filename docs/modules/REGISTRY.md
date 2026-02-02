@@ -226,6 +226,33 @@ This registry tracks all implemented modules to prevent duplication and facilita
   - Audio format validation (.wav, .mp3, .flac, .ogg)
   - Device management (CPU/GPU)
 
+### Audio Preprocessing
+- **Path**: `src/models/audio_preprocessing.py`
+- **Purpose**: Audio preprocessing and enhancement for voice processing
+- **Status**: ✅ Implemented (100% test coverage)
+- **Test Coverage**: 100%
+- **Dependencies**: librosa, soundfile, numpy, noisereduce (optional)
+- **API**:
+  - `AudioPreprocessor.__init__(sample_rate, device, normalize) -> None`
+  - `AudioPreprocessor.load_audio(audio_path) -> Tuple[np.ndarray, int]`
+  - `AudioPreprocessor.convert_sample_rate(audio_data, original_sr, target_sr) -> np.ndarray`
+  - `AudioPreprocessor.normalize_audio(audio_data, target_db) -> np.ndarray`
+  - `AudioPreprocessor.trim_silence(audio_data, threshold_db, frame_length) -> np.ndarray`
+  - `AudioPreprocessor.reduce_noise(audio_data, sr, noise_reduce_strength) -> np.ndarray`
+  - `AudioPreprocessor.save_audio(audio_data, output_path, sr) -> str`
+  - `AudioPreprocessor.convert_format(input_path, output_path, target_format) -> str`
+  - `AudioPreprocessor.validate_audio_quality(audio_data, sr) -> Dict[str, Any]`
+  - `AudioPreprocessor.preprocess(input_path, output_path, ...) -> Tuple[str, Dict]`
+- **Features**:
+  - Audio format conversion (wav, mp3, flac, ogg)
+  - Sample rate conversion
+  - Audio normalization to target dB
+  - Silence trimming
+  - Noise reduction (optional)
+  - Audio quality validation
+  - Full preprocessing pipeline
+  - Device management (CPU/GPU)
+
 ### Voice Cloning
 - **Path**: `src/models/voice_cloning.py`
 - **Purpose**: TTS model integration for voice cloning

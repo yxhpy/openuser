@@ -37,7 +37,7 @@
 ### 2.1 Voice Processing
 - [x] Integrate TTS model (e.g., Coqui TTS, VITS)
 - [x] Implement voice cloning pipeline
-- [ ] Audio preprocessing and enhancement
+- [x] Audio preprocessing and enhancement
 - [ ] Real-time voice synthesis API
 
 ### 2.2 Face Animation
