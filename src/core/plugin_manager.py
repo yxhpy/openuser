@@ -10,6 +10,9 @@ from pathlib import Path
 from typing import Dict, List, Optional, Any
 import logging
 
+from src.core.plugin_config import PluginConfig, PluginConfigSchema
+from src.core.plugin_dependency import DependencyResolver
+
 
 class Plugin:
     """Base class for all plugins"""
@@ -17,10 +20,19 @@ class Plugin:
     name: str = ""
     version: str = "1.0.0"
     dependencies: List[str] = []
+    config_schema: Optional[PluginConfigSchema] = None
 
     def __init__(self) -> None:
         self.logger = logging.getLogger(f"plugin.{self.name}")
         self._state: Dict[str, Any] = {}
+        self.config: Optional[PluginConfig] = None
+
+        # Initialize configuration if schema is provided
+        if self.config_schema:
+            self.config = PluginConfig(self.name, self.config_schema)
+            is_valid, errors = self.config.validate()
+            if not is_valid:
+                self.logger.warning(f"Configuration validation failed: {errors}")
 
     def on_load(self) -> None:
         """Called when plugin is loaded"""
@@ -37,6 +49,17 @@ class Plugin:
     def restore_state(self, state: Dict[str, Any]) -> None:
         """Restore plugin state from backup"""
         self._state = state.copy()
+
+    def reload_config(self) -> bool:
+        """
+        Hot-reload plugin configuration
+
+        Returns:
+            True if successful, False otherwise
+        """
+        if self.config:
+            return self.config.reload()
+        return False
 
 
 class PluginManager:
@@ -55,6 +78,7 @@ class PluginManager:
         self.plugins: Dict[str, Plugin] = {}
         self.state_backup: Dict[str, Dict[str, Any]] = {}
         self.logger = logging.getLogger("plugin_manager")
+        self.dependency_resolver = DependencyResolver()
 
     def load_plugin(self, plugin_name: str) -> Optional[Plugin]:
         """
@@ -77,6 +101,21 @@ class PluginManager:
 
             # Create plugin instance
             plugin = plugin_class()
+
+            # Register with dependency resolver
+            self.dependency_resolver.add_plugin(
+                plugin.name,
+                plugin.version,
+                plugin.dependencies
+            )
+
+            # Check dependencies
+            satisfied, missing = self.dependency_resolver.check_dependencies(plugin.name)
+            if not satisfied:
+                self.logger.error(
+                    f"Plugin {plugin_name} has unsatisfied dependencies: {missing}"
+                )
+                return None
 
             # Call load hook
             plugin.on_load()
@@ -198,3 +237,37 @@ class PluginManager:
             Plugin instance if found, None otherwise
         """
         return self.plugins.get(plugin_name)
+
+    def check_dependencies(self, plugin_name: str) -> tuple[bool, List[str]]:
+        """
+        Check if plugin dependencies are satisfied
+
+        Args:
+            plugin_name: Name of plugin to check
+
+        Returns:
+            Tuple of (all_satisfied, missing_dependencies)
+        """
+        return self.dependency_resolver.check_dependencies(plugin_name)
+
+    def get_load_order(self) -> tuple[bool, List[str], List[str]]:
+        """
+        Get optimal plugin load order
+
+        Returns:
+            Tuple of (success, load_order, errors)
+        """
+        return self.dependency_resolver.resolve_load_order()
+
+    def get_dependency_tree(self, plugin_name: str) -> Dict[str, List[str]]:
+        """
+        Get dependency tree for a plugin
+
+        Args:
+            plugin_name: Name of plugin
+
+        Returns:
+            Dictionary mapping plugin names to their dependencies
+        """
+        return self.dependency_resolver.get_dependency_tree(plugin_name)
+

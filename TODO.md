@@ -77,30 +77,30 @@
 - [x] `/api/v1/scheduler/{task_id}` - Get/Update/Delete task
 
 ### 3.3 WebSocket Support
-- [ ] Real-time progress updates
-- [ ] Live video streaming
-- [ ] Agent communication channel
+- [x] Real-time progress updates
+- [x] Live video streaming
+- [x] Agent communication channel
 
 ## Phase 4: Plugin System (Week 6)
 
 ### 4.1 Plugin Framework
-- [ ] Define plugin base class
-- [ ] Implement plugin lifecycle hooks
-- [ ] Plugin configuration schema
-- [ ] Plugin dependency management
+- [x] Define plugin base class
+- [x] Implement plugin lifecycle hooks
+- [x] Plugin configuration schema
+- [x] Plugin dependency management
 
 ### 4.2 Built-in Plugins
-- [ ] `image-processor` - Image preprocessing
-- [ ] `video-editor` - Video editing utilities
-- [ ] `audio-enhancer` - Audio enhancement
-- [ ] `model-downloader` - Auto-download models
-- [ ] `cache-manager` - Cache management
+- [x] `image-processor` - Image preprocessing
+- [x] `video-editor` - Video editing utilities
+- [x] `audio-enhancer` - Audio enhancement
+- [x] `model-downloader` - Auto-download models
+- [x] `cache-manager` - Cache management
 
 ### 4.3 Plugin Registry
-- [ ] Local plugin registry
-- [ ] Remote plugin repository
-- [ ] Plugin search and discovery
-- [ ] Auto-update mechanism
+- [x] Local plugin registry
+- [x] Remote plugin repository
+- [x] Plugin search and discovery
+- [x] Auto-update mechanism
 
 ## Phase 5: Integration Layer (Week 7-8)
 

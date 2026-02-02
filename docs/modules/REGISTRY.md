@@ -19,18 +19,99 @@ This registry tracks all implemented modules to prevent duplication and facilita
 - **Purpose**: Hot-reload plugin system with dependency resolution
 - **Status**: ✅ Implemented (100% test coverage)
 - **Test Coverage**: 100%
-- **Dependencies**: None
+- **Dependencies**: plugin_config, plugin_dependency
 - **API**:
   - `PluginManager.load_plugin(name: str) -> Plugin`
   - `PluginManager.reload_plugin(name: str) -> bool`
   - `PluginManager.unload_plugin(name: str) -> bool`
   - `PluginManager.list_plugins() -> List[Plugin]`
   - `PluginManager.get_plugin(name: str) -> Optional[Plugin]`
+  - `PluginManager.check_dependencies(name: str) -> tuple[bool, List[str]]`
+  - `PluginManager.get_load_order() -> tuple[bool, List[str], List[str]]`
+  - `PluginManager.get_dependency_tree(name: str) -> Dict[str, List[str]]`
 - **Features**:
   - Hot-reload plugins without restart
   - State backup and rollback
   - Plugin lifecycle hooks (on_load, on_unload)
   - Error handling and recovery
+  - Dependency resolution and validation
+  - Automatic load order determination
+  - Version constraint checking
+
+### Plugin Configuration
+- **Path**: `src/core/plugin_config.py`
+- **Purpose**: Configuration schema and management for plugins
+- **Status**: ✅ Implemented (100% test coverage)
+- **Test Coverage**: 100%
+- **Dependencies**: None
+- **API**:
+  - `ConfigField` - Configuration field definition with type and validation
+  - `PluginConfigSchema` - Schema definition for plugin configuration
+  - `PluginConfig` - Configuration manager with hot-reload
+  - `PluginConfig.get(key: str, default: Any) -> Any`
+  - `PluginConfig.set(key: str, value: Any) -> None`
+  - `PluginConfig.reload() -> bool`
+  - `PluginConfig.save(format: str) -> bool`
+  - `PluginConfig.validate() -> tuple[bool, List[str]]`
+- **Features**:
+  - Type-safe configuration fields (string, integer, float, boolean, list, dict)
+  - Required and optional fields
+  - Default values
+  - Custom validators
+  - JSON and YAML file support
+  - Hot-reload configuration
+  - Validation with error messages
+
+### Plugin Dependency Management
+- **Path**: `src/core/plugin_dependency.py`
+- **Purpose**: Dependency resolution and version management for plugins
+- **Status**: ✅ Implemented (99% test coverage)
+- **Test Coverage**: 99%
+- **Dependencies**: None
+- **API**:
+  - `PluginDependency.parse(dep_string: str) -> PluginDependency`
+  - `PluginDependency.check_version(version: str) -> bool`
+  - `DependencyResolver.add_plugin(name: str, version: str, dependencies: List[str]) -> None`
+  - `DependencyResolver.check_dependencies(plugin_name: str) -> tuple[bool, List[str]]`
+  - `DependencyResolver.resolve_load_order() -> tuple[bool, List[str], List[str]]`
+  - `DependencyResolver.get_dependency_tree(plugin_name: str) -> Dict[str, List[str]]`
+- **Features**:
+  - Semantic version parsing and comparison
+  - Version constraints (==, >=, <=, >, <)
+  - Dependency validation
+  - Topological sort for load order
+  - Circular dependency detection
+  - Dependency tree visualization
+  - Missing dependency detection
+
+### Plugin Registry
+- **Path**: `src/core/plugin_registry.py`
+- **Purpose**: Plugin discovery, search, and management system
+- **Status**: ✅ Implemented (100% test coverage)
+- **Test Coverage**: 100%
+- **Dependencies**: requests
+- **API**:
+  - `PluginRegistry.register(metadata: PluginMetadata) -> None`
+  - `PluginRegistry.unregister(name: str) -> bool`
+  - `PluginRegistry.get(name: str) -> Optional[PluginMetadata]`
+  - `PluginRegistry.list_all() -> List[PluginMetadata]`
+  - `PluginRegistry.search(query, tags, author) -> List[PluginMetadata]`
+  - `PluginRegistry.sync_from_remote(remote_url, merge) -> tuple[bool, str]`
+  - `PluginRegistry.check_updates(remote_url) -> List[tuple[str, str, str]]`
+  - `PluginRegistry.export_to_file(output_path) -> None`
+  - `PluginRegistry.import_from_file(input_path, merge) -> tuple[bool, str]`
+  - `PluginRegistry.get_stats() -> Dict[str, Any]`
+  - `PluginMetadata` - Plugin metadata dataclass
+- **Features**:
+  - Local plugin registry with JSON persistence
+  - Plugin metadata management (name, version, description, author, tags, etc.)
+  - Search and discovery (by query, tags, author)
+  - Remote registry synchronization (merge or replace)
+  - Auto-update checking with semantic versioning
+  - Import/export registry to files
+  - Registry statistics (plugins by author, by tag)
+  - Version comparison and update detection
+  - Corrupted registry recovery
 
 ### Agent Manager
 - **Path**: `src/core/agent_manager.py`
@@ -594,6 +675,25 @@ This registry tracks all implemented modules to prevent duplication and facilita
   - Authentication and authorization
   - Comprehensive error handling
 
+### WebSocket API
+- **Path**: `src/api/websocket.py`
+- **Purpose**: Real-time bidirectional communication via WebSocket
+- **Status**: ✅ Implemented (95% test coverage)
+- **Test Coverage**: 95%
+- **Dependencies**: FastAPI WebSocket, authentication
+- **API**:
+  - `WS /api/v1/ws/progress` - Real-time progress updates for tasks
+  - `WS /api/v1/ws/agent` - Agent communication channel
+  - `GET /api/v1/ws/connections` - Connection statistics
+- **Features**:
+  - Connection management with user authentication
+  - Task progress subscription and broadcasting
+  - Agent bidirectional communication
+  - Automatic connection cleanup
+  - Ping/pong heartbeat support
+  - JWT token authentication for WebSocket connections
+  - Connection statistics endpoint
+
 ---
 
 ## Integration Modules
@@ -622,6 +722,63 @@ This registry tracks all implemented modules to prevent duplication and facilita
 
 ## Plugin Modules
 
+### Cache Manager Plugin
+- **Path**: `src/plugins/cache_manager.py`
+- **Purpose**: Cache management utilities with TTL and size limits
+- **Status**: ✅ Implemented (94% test coverage)
+- **Test Coverage**: 94%
+- **Dependencies**: None
+- **API**:
+  - `CacheManager.set(key, value, ttl) -> bool`
+  - `CacheManager.get(key) -> Optional[Any]`
+  - `CacheManager.delete(key) -> bool`
+  - `CacheManager.exists(key) -> bool`
+  - `CacheManager.clear() -> int`
+  - `CacheManager.cleanup_expired() -> int`
+  - `CacheManager.get_size() -> int`
+  - `CacheManager.get_stats() -> Dict[str, Any]`
+  - `CacheManager.enforce_size_limit() -> int`
+- **Configuration**:
+  - `cache_dir` (string, default: "cache") - Cache storage directory
+  - `max_size_mb` (integer, default: 1024) - Maximum cache size in MB
+  - `default_ttl` (integer, default: 3600) - Default TTL in seconds
+- **Features**:
+  - Key-value cache with JSON serialization
+  - TTL (Time To Live) support with automatic expiration
+  - Cache size management with LRU eviction
+  - Cache statistics (hits, misses, hit rate)
+  - Cleanup expired entries
+  - Enforce size limits
+  - SHA256 key hashing
+  - Configuration schema with validation
+
+### Image Processor Plugin
+- **Path**: `src/plugins/image_processor.py`
+- **Purpose**: Image preprocessing and enhancement capabilities
+- **Status**: ✅ Implemented (100% test coverage)
+- **Test Coverage**: 100%
+- **Dependencies**: PIL (Pillow)
+- **API**:
+  - `ImageProcessor.resize(input_path, output_path, size, keep_aspect_ratio) -> str`
+  - `ImageProcessor.crop(input_path, output_path, box) -> str`
+  - `ImageProcessor.enhance(input_path, output_path, brightness, contrast, sharpness, color) -> str`
+  - `ImageProcessor.convert_format(input_path, output_path, format) -> str`
+  - `ImageProcessor.apply_filter(input_path, output_path, filter_type) -> str`
+  - `ImageProcessor.get_stats() -> dict`
+- **Configuration**:
+  - `default_format` (string, default: "PNG") - Default output format
+  - `default_quality` (integer, default: 95) - JPEG quality (1-100)
+  - `max_size` (integer, default: 4096) - Maximum image dimension
+- **Features**:
+  - Resize images with/without aspect ratio preservation
+  - Crop images to specified dimensions
+  - Enhance brightness, contrast, sharpness, and color
+  - Convert between image formats (PNG, JPEG, etc.)
+  - Apply filters (BLUR, SHARPEN, SMOOTH, EDGE_ENHANCE)
+  - Automatic RGBA to RGB conversion for JPEG
+  - Configuration schema with validation
+  - Processing statistics tracking
+
 ### Image Processor
 - **Path**: `src/plugins/image_processor.py`
 - **Purpose**: Image preprocessing and enhancement
@@ -631,6 +788,37 @@ This registry tracks all implemented modules to prevent duplication and facilita
 - **API**:
   - `ImageProcessor.resize(image: str, size: tuple) -> str`
   - `ImageProcessor.enhance(image: str) -> str`
+
+### Video Editor Plugin
+- **Path**: `src/plugins/video_editor.py`
+- **Purpose**: Video editing utilities using ffmpeg
+- **Status**: ✅ Implemented (100% test coverage)
+- **Test Coverage**: 100%
+- **Dependencies**: ffmpeg (external)
+- **API**:
+  - `VideoEditor.trim(input_path, output_path, start, end, duration) -> str`
+  - `VideoEditor.concat(input_paths, output_path, method) -> str`
+  - `VideoEditor.convert_format(input_path, output_path, codec, audio_codec, quality, fps) -> str`
+  - `VideoEditor.extract_audio(input_path, output_path, audio_codec) -> str`
+  - `VideoEditor.add_audio(video_path, audio_path, output_path, replace) -> str`
+  - `VideoEditor.get_video_info(video_path) -> Optional[dict]`
+  - `VideoEditor.get_stats() -> dict`
+- **Configuration**:
+  - `ffmpeg_path` (string, default: "ffmpeg") - Path to ffmpeg executable
+  - `default_codec` (string, default: "libx264") - Default video codec
+  - `default_audio_codec` (string, default: "aac") - Default audio codec
+  - `default_quality` (integer, default: 23) - Default CRF quality (0-51, lower is better)
+  - `default_fps` (integer, default: 30) - Default frames per second
+- **Features**:
+  - Trim videos to specified time ranges
+  - Concatenate multiple videos (filter or demuxer method)
+  - Convert video formats and codecs
+  - Extract audio from videos
+  - Add or replace audio in videos
+  - Get video information using ffprobe
+  - Processing statistics tracking
+  - Configuration schema with validation
+  - Comprehensive error handling
 
 ### Video Editor
 - **Path**: `src/plugins/video_editor.py`
@@ -645,12 +833,53 @@ This registry tracks all implemented modules to prevent duplication and facilita
 ### Audio Enhancer
 - **Path**: `src/plugins/audio_enhancer.py`
 - **Purpose**: Audio enhancement and noise reduction
-- **Status**: 📝 Planned
-- **Test Coverage**: N/A
-- **Dependencies**: librosa
+- **Status**: ✅ Implemented (99% test coverage)
+- **Test Coverage**: 99%
+- **Dependencies**: AudioPreprocessor
 - **API**:
-  - `AudioEnhancer.denoise(audio: str) -> str`
-  - `AudioEnhancer.normalize(audio: str) -> str`
+  - `AudioEnhancer.denoise(input_path, output_path, strength) -> str`
+  - `AudioEnhancer.normalize(input_path, output_path, target_db) -> str`
+  - `AudioEnhancer.enhance(input_path, output_path, denoise, normalize, trim_silence, noise_strength, target_db) -> Dict[str, Any]`
+  - `AudioEnhancer.get_stats() -> Dict[str, Any]`
+- **Configuration**:
+  - `sample_rate` (integer, default: 22050) - Target sample rate for audio processing
+  - `normalize` (boolean, default: true) - Whether to normalize audio by default
+  - `noise_reduce_strength` (float, default: 0.5) - Default noise reduction strength (0.0 to 1.0)
+- **Features**:
+  - Audio denoising with configurable strength
+  - Audio normalization to target dB level
+  - Full audio enhancement pipeline (denoise + normalize + trim silence)
+  - Processing statistics tracking
+  - Configuration schema with validation
+  - Automatic output path generation
+
+### Model Downloader Plugin
+- **Path**: `src/plugins/model_downloader.py`
+- **Purpose**: Auto-download AI models with progress tracking and verification
+- **Status**: ✅ Implemented (100% test coverage)
+- **Test Coverage**: 100%
+- **Dependencies**: requests, tqdm
+- **API**:
+  - `ModelDownloader.download(url, output_path, checksum, progress_callback) -> str`
+  - `ModelDownloader.download_with_progress(url, output_path, checksum) -> str`
+  - `ModelDownloader.list_models() -> List[Dict[str, Any]]`
+  - `ModelDownloader.delete_model(name) -> bool`
+  - `ModelDownloader.get_model_path(name) -> Optional[str]`
+  - `ModelDownloader.get_stats() -> Dict[str, Any]`
+- **Configuration**:
+  - `download_dir` (string, default: "models") - Directory to store downloaded models
+  - `chunk_size` (integer, default: 8192) - Download chunk size in bytes
+  - `verify_checksum` (boolean, default: true) - Verify file checksum after download
+  - `timeout` (integer, default: 300) - Download timeout in seconds
+- **Features**:
+  - Download models from URLs with progress tracking
+  - SHA256 checksum verification
+  - Resume downloads (skip if file exists with valid checksum)
+  - Progress bar support with tqdm
+  - Model listing and management
+  - Download statistics tracking
+  - Automatic directory creation
+  - Error handling and cleanup
 
 ---
 
@@ -716,7 +945,7 @@ This registry tracks all implemented modules to prevent duplication and facilita
 
 ## Last Updated
 
-2026-02-02 - Phase 3.2 Core Endpoints completed
+2026-02-03 - Phase 4.3 Plugin Registry completed
 - Plugin Manager: ✅ Implemented
 - Agent Manager: ✅ Implemented
 - Config Manager: ✅ Implemented
@@ -735,7 +964,15 @@ This registry tracks all implemented modules to prevent duplication and facilita
 - Model Manager: ✅ Implemented (Model caching, versioning, device management)
 - Authentication System: ✅ Implemented (JWT auth, user registration, login, token refresh)
 - Authentication Utilities: ✅ Implemented (Password hashing, JWT token management)
-- **Digital Human API: ✅ Implemented (Create, generate, list, get, delete endpoints with 100% test coverage)**
-- **Plugin API: ✅ Implemented (List, install, reload endpoints with 100% test coverage)**
-- **Agent API: ✅ Implemented (Create, list, get, update, delete endpoints with 100% test coverage)**
-- **Scheduler API: ✅ Implemented (Create, list, get, update, delete endpoints with 100% test coverage)**
+- Digital Human API: ✅ Implemented (Create, generate, list, get, delete endpoints with 100% test coverage)
+- Plugin API: ✅ Implemented (List, install, reload endpoints with 100% test coverage)
+- Agent API: ✅ Implemented (Create, list, get, update, delete endpoints with 100% test coverage)
+- Scheduler API: ✅ Implemented (Create, list, get, update, delete endpoints with 100% test coverage)
+- WebSocket API: ✅ Implemented (Real-time progress updates, agent communication with 95% test coverage)
+- Cache Manager Plugin: ✅ Implemented (Cache management with TTL and size limits, 94% test coverage)
+- Image Processor Plugin: ✅ Implemented (Image preprocessing and enhancement, 100% test coverage)
+- Video Editor Plugin: ✅ Implemented (Video editing utilities with ffmpeg, 100% test coverage)
+- Audio Enhancer Plugin: ✅ Implemented (Audio enhancement and noise reduction, 99% test coverage)
+- Model Downloader Plugin: ✅ Implemented (Auto-download models with progress tracking and verification, 100% test coverage)
+- **Plugin Registry: ✅ Implemented (Plugin discovery, search, and management with remote sync, 100% test coverage)**
+
