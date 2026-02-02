@@ -2,7 +2,7 @@
 API request and response schemas using Pydantic.
 """
 from typing import Optional, List, Dict, Any
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, EmailStr
 
 
 class VoiceSynthesizeRequest(BaseModel):
@@ -72,3 +72,58 @@ class ErrorResponse(BaseModel):
 
     error: str = Field(..., description="Error message")
     detail: Optional[str] = Field(default=None, description="Detailed error information")
+
+
+# Authentication Schemas
+
+class UserRegisterRequest(BaseModel):
+    """Request schema for user registration."""
+
+    username: str = Field(..., min_length=3, max_length=50, description="Username")
+    email: EmailStr = Field(..., description="Email address")
+    password: str = Field(..., min_length=8, max_length=100, description="Password")
+
+    @field_validator("password")
+    @classmethod
+    def validate_password(cls, v: str) -> str:
+        """Validate password strength."""
+        if not any(c.isupper() for c in v):
+            raise ValueError("Password must contain at least one uppercase letter")
+        if not any(c.islower() for c in v):
+            raise ValueError("Password must contain at least one lowercase letter")
+        if not any(c.isdigit() for c in v):
+            raise ValueError("Password must contain at least one digit")
+        return v
+
+
+class UserLoginRequest(BaseModel):
+    """Request schema for user login."""
+
+    username: str = Field(..., description="Username or email")
+    password: str = Field(..., description="Password")
+
+
+class TokenResponse(BaseModel):
+    """Response schema for authentication tokens."""
+
+    access_token: str = Field(..., description="JWT access token")
+    refresh_token: str = Field(..., description="JWT refresh token")
+    token_type: str = Field(default="bearer", description="Token type")
+    expires_in: int = Field(..., description="Token expiration time in seconds")
+
+
+class TokenRefreshRequest(BaseModel):
+    """Request schema for token refresh."""
+
+    refresh_token: str = Field(..., description="JWT refresh token")
+
+
+class UserResponse(BaseModel):
+    """Response schema for user information."""
+
+    id: int = Field(..., description="User ID")
+    username: str = Field(..., description="Username")
+    email: str = Field(..., description="Email address")
+    is_active: bool = Field(..., description="Whether user is active")
+    is_superuser: bool = Field(..., description="Whether user is superuser")
+    created_at: str = Field(..., description="Account creation timestamp")

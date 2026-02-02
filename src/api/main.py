@@ -5,6 +5,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from src.api.voice import router as voice_router
+from src.api.auth import router as auth_router
 
 
 def create_app() -> FastAPI:
@@ -32,6 +33,7 @@ def create_app() -> FastAPI:
     )
 
     # Include routers
+    app.include_router(auth_router)
     app.include_router(voice_router)
 
     @app.get("/")
