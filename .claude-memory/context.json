@@ -119,6 +119,7 @@
       "name": "commit-after-milestone",
       "description": "After each small milestone, commit to git and push to remote",
       "steps": [
+        "Update TODO.md to mark completed tasks",
         "git status",
         "git add <files>",
         "git commit -m 'message'",
