@@ -344,6 +344,37 @@ This registry tracks all implemented modules to prevent duplication and facilita
   - Automatic cleanup
   - Configurable pipeline stages
 
+### Model Manager
+- **Path**: `src/models/model_manager.py`
+- **Purpose**: Centralized model management with caching and device management
+- **Status**: ✅ Implemented (100% test coverage)
+- **Test Coverage**: 100%
+- **Dependencies**: torch
+- **API**:
+  - `ModelManager.__init__(cache_dir, device, max_cache_size_gb) -> None`
+  - `ModelManager.register_model(model_info) -> None`
+  - `ModelManager.get_model_path(name, version) -> Optional[Path]`
+  - `ModelManager.is_model_cached(name, version) -> bool`
+  - `ModelManager.list_models() -> List[ModelInfo]`
+  - `ModelManager.get_model_info(name, version) -> Optional[ModelInfo]`
+  - `ModelManager.delete_model(name, version) -> bool`
+  - `ModelManager.get_device() -> str`
+  - `ModelManager.set_device(device) -> None`
+  - `ModelManager.get_device_info() -> Dict[str, Any]`
+  - `ModelManager.clear_cache() -> None`
+  - `ModelManager.get_cache_stats() -> Dict[str, Any]`
+  - `ModelInfo.to_dict() -> Dict[str, Any]`
+  - `ModelInfo.from_dict(data) -> ModelInfo`
+- **Features**:
+  - Model registry with versioning
+  - Model caching with size limits
+  - LRU cache cleanup (removes oldest models first)
+  - GPU/CPU device management
+  - Device information (CUDA memory, device count)
+  - SHA256 checksum calculation
+  - Cache statistics
+  - Model metadata (name, version, URL, size, dependencies)
+
 ### Voice Cloning
 - **Path**: `src/models/voice_cloning.py`
 - **Purpose**: TTS model integration for voice cloning
@@ -579,7 +610,7 @@ This registry tracks all implemented modules to prevent duplication and facilita
 
 ## Last Updated
 
-2026-02-02 - Phase 2.2 Face Animation completed with video generation pipeline
+2026-02-02 - Phase 2.3 Model Management completed
 - Plugin Manager: ✅ Implemented
 - Agent Manager: ✅ Implemented
 - Config Manager: ✅ Implemented
@@ -595,3 +626,4 @@ This registry tracks all implemented modules to prevent duplication and facilita
 - GFPGAN Integration: ✅ Implemented (Face enhancement)
 - SadTalker Integration: ✅ Implemented (Talking head generation)
 - Video Generation Pipeline: ✅ Implemented (Unified digital human pipeline)
+- Model Manager: ✅ Implemented (Model caching, versioning, device management)
