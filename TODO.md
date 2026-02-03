@@ -127,7 +127,7 @@
 - [x] API type generation from Pydantic schemas - 2026-02-03
 - [x] Plugin management UI - 2026-02-03
 - [x] Task scheduler UI - 2026-02-03
-- [ ] E2E tests with Playwright
+- [x] E2E tests with Playwright - 2026-02-03
 - [x] Fix API inconsistencies (6 issues documented) - 2026-02-03
 
 ## Phase 6: Scheduler & Automation (Week 9)
