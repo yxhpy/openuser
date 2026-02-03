@@ -99,7 +99,7 @@ async def get_current_user(
     return user
 
 
-@router.post("/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
+@router.post("/register", response_model=TokenResponse, status_code=status.HTTP_201_CREATED)
 async def register(
     request: UserRegisterRequest,
     db: Session = Depends(get_db)
@@ -147,13 +147,23 @@ async def register(
     db.commit()
     db.refresh(new_user)
 
-    return UserResponse(
-        id=new_user.id,
-        username=new_user.username,
-        email=new_user.email,
-        is_active=new_user.is_active,
-        is_superuser=new_user.is_superuser,
-        created_at=new_user.created_at.isoformat()
+    # Create tokens for the new user
+    access_token = create_access_token(data={"sub": new_user.username})
+    refresh_token = create_refresh_token(data={"sub": new_user.username})
+
+    return TokenResponse(
+        access_token=access_token,
+        refresh_token=refresh_token,
+        token_type="bearer",
+        expires_in=ACCESS_TOKEN_EXPIRE_MINUTES * 60,
+        user=UserResponse(
+            id=new_user.id,
+            username=new_user.username,
+            email=new_user.email,
+            is_active=new_user.is_active,
+            is_superuser=new_user.is_superuser,
+            created_at=new_user.created_at.isoformat()
+        )
     )
 
 
@@ -201,7 +211,15 @@ async def login(
         access_token=access_token,
         refresh_token=refresh_token,
         token_type="bearer",
-        expires_in=ACCESS_TOKEN_EXPIRE_MINUTES * 60
+        expires_in=ACCESS_TOKEN_EXPIRE_MINUTES * 60,
+        user=UserResponse(
+            id=user.id,
+            username=user.username,
+            email=user.email,
+            is_active=user.is_active,
+            is_superuser=user.is_superuser,
+            created_at=user.created_at.isoformat()
+        )
     )
 
 

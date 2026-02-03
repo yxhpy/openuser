@@ -111,6 +111,7 @@ class TokenResponse(BaseModel):
     refresh_token: str = Field(..., description="JWT refresh token")
     token_type: str = Field(default="bearer", description="Token type")
     expires_in: int = Field(..., description="Token expiration time in seconds")
+    user: Optional['UserResponse'] = Field(default=None, description="User information")
 
 
 class TokenRefreshRequest(BaseModel):
@@ -128,6 +129,9 @@ class UserResponse(BaseModel):
     is_active: bool = Field(..., description="Whether user is active")
     is_superuser: bool = Field(..., description="Whether user is superuser")
     created_at: str = Field(..., description="Account creation timestamp")
+
+    class Config:
+        from_attributes = True
 
 
 # Digital Human Schemas
