@@ -128,7 +128,7 @@
 - [ ] Plugin management UI
 - [ ] Task scheduler UI
 - [ ] E2E tests with Playwright
-- [ ] Fix API inconsistencies (6 issues documented)
+- [x] Fix API inconsistencies (6 issues documented) - 2026-02-03
 
 ## Phase 6: Scheduler & Automation (Week 9)
 
@@ -181,7 +181,7 @@
 - [x] Analyze frontend-backend API inconsistencies
 - [x] Document all mismatches
 - [x] Create type generation script
-- [ ] Fix identified API inconsistencies
+- [x] Fix identified API inconsistencies - 2026-02-03
 - [ ] Add API contract tests
 - [ ] Add pre-commit hook for type generation
 
