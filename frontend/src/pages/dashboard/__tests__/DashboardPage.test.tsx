@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { render, screen } from '@/test/utils';
+import { render, screen, waitFor } from '@/test/utils';
 import { DashboardPage } from '../DashboardPage';
 
 describe('DashboardPage', () => {
@@ -10,30 +10,36 @@ describe('DashboardPage', () => {
       expect(screen.getByText('Dashboard')).toBeInTheDocument();
     });
 
-    it('should render all statistic cards', () => {
+    it('should render all statistic cards', async () => {
       render(<DashboardPage />);
 
-      // Check all statistic titles
-      expect(screen.getByText('Digital Humans')).toBeInTheDocument();
-      expect(screen.getByText('Plugins')).toBeInTheDocument();
-      expect(screen.getByText('Agents')).toBeInTheDocument();
-      expect(screen.getByText('Scheduled Tasks')).toBeInTheDocument();
+      // Wait for data to load
+      await waitFor(() => {
+        expect(screen.getByText('Digital Humans')).toBeInTheDocument();
+        expect(screen.getByText('Plugins')).toBeInTheDocument();
+        expect(screen.getByText('Agents')).toBeInTheDocument();
+        expect(screen.getByText('Scheduled Tasks')).toBeInTheDocument();
+      });
     });
 
-    it('should render all statistic values as 0', () => {
+    it('should render statistic values from API', async () => {
       render(<DashboardPage />);
 
-      // Get all elements with value 0
-      const statistics = screen.getAllByText('0');
-      expect(statistics).toHaveLength(4);
+      // Wait for data to load - should show 1 for each stat based on mock data
+      await waitFor(() => {
+        const statistics = screen.getAllByText('1');
+        expect(statistics.length).toBeGreaterThanOrEqual(4);
+      });
     });
 
-    it('should render all icons', () => {
+    it('should render all icons', async () => {
       render(<DashboardPage />);
 
-      // Check for icon containers (Ant Design renders icons as spans with specific classes)
-      const container = document.querySelector('.ant-statistic-content');
-      expect(container).toBeInTheDocument();
+      // Wait for loading to complete
+      await waitFor(() => {
+        const container = document.querySelector('.ant-statistic-content');
+        expect(container).toBeInTheDocument();
+      });
     });
   });
 
@@ -56,6 +62,28 @@ describe('DashboardPage', () => {
       // Check for Ant Design Card components
       const cards = document.querySelectorAll('.ant-card');
       expect(cards).toHaveLength(4);
+    });
+  });
+
+  describe('Data Loading', () => {
+    it('should show loading state initially', () => {
+      render(<DashboardPage />);
+
+      // Cards should have loading state
+      const cards = document.querySelectorAll('.ant-card-loading');
+      expect(cards.length).toBeGreaterThan(0);
+    });
+
+    it('should fetch and display stats from APIs', async () => {
+      render(<DashboardPage />);
+
+      // Wait for all stats to load
+      await waitFor(() => {
+        expect(screen.getByText('Digital Humans')).toBeInTheDocument();
+        expect(screen.getByText('Plugins')).toBeInTheDocument();
+        expect(screen.getByText('Agents')).toBeInTheDocument();
+        expect(screen.getByText('Scheduled Tasks')).toBeInTheDocument();
+      });
     });
   });
 });

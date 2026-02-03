@@ -200,6 +200,215 @@ describe('PluginsPage', () => {
     });
   });
 
+  describe('Install Plugin Modal', () => {
+    it('should open install modal when install button is clicked', async () => {
+      const user = userEvent.setup();
+      render(<PluginsPage />);
+
+      await waitFor(() => {
+        expect(screen.getByText('Plugin Management')).toBeInTheDocument();
+      });
+
+      const installButtons = screen.getAllByRole('button', { name: /install plugin/i });
+      await user.click(installButtons[0]);
+
+      await waitFor(() => {
+        expect(screen.getByRole('dialog')).toBeInTheDocument();
+        expect(screen.getByPlaceholderText('e.g., image-processor, video-editor')).toBeInTheDocument();
+      });
+    });
+
+    it('should open install modal from empty state button', async () => {
+      const user = userEvent.setup();
+      vi.mocked(pluginApi.list).mockResolvedValue({
+        plugins: [],
+        total: 0,
+      });
+
+      render(<PluginsPage />);
+
+      await waitFor(() => {
+        expect(screen.getByText('No plugins installed')).toBeInTheDocument();
+      });
+
+      const installButton = screen.getByRole('button', { name: /install your first plugin/i });
+      await user.click(installButton);
+
+      await waitFor(() => {
+        expect(screen.getByRole('dialog')).toBeInTheDocument();
+      });
+    });
+
+    it('should close modal when cancel button is clicked', async () => {
+      const user = userEvent.setup();
+      render(<PluginsPage />);
+
+      await waitFor(() => {
+        expect(screen.getByText('Plugin Management')).toBeInTheDocument();
+      });
+
+      const installButtons = screen.getAllByRole('button', { name: /install plugin/i });
+      await user.click(installButtons[0]);
+
+      await waitFor(() => {
+        expect(screen.getByRole('dialog')).toBeInTheDocument();
+      });
+
+      const cancelButton = screen.getByRole('button', { name: /cancel/i });
+      await user.click(cancelButton);
+
+      await waitFor(() => {
+        expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+      });
+    });
+
+    it('should install plugin when form is submitted', async () => {
+      const { message } = await import('antd');
+      const user = userEvent.setup();
+      vi.mocked(pluginApi.install).mockResolvedValue({
+        message: 'Plugin installed successfully',
+      });
+
+      render(<PluginsPage />);
+
+      await waitFor(() => {
+        expect(screen.getByText('Plugin Management')).toBeInTheDocument();
+      });
+
+      const installButtons = screen.getAllByRole('button', { name: /install plugin/i });
+      await user.click(installButtons[0]);
+
+      await waitFor(() => {
+        expect(screen.getByRole('dialog')).toBeInTheDocument();
+      });
+
+      const input = screen.getByPlaceholderText('e.g., image-processor, video-editor');
+      await user.type(input, 'new-plugin');
+
+      const submitButton = screen.getByRole('button', { name: /^install$/i });
+      await user.click(submitButton);
+
+      await waitFor(() => {
+        expect(pluginApi.install).toHaveBeenCalledWith({ name: 'new-plugin' });
+        expect(message.success).toHaveBeenCalledWith('Plugin installed successfully');
+      });
+    });
+
+    it('should show error message on install failure', async () => {
+      const { message } = await import('antd');
+      const user = userEvent.setup();
+      const errorMessage = 'Plugin not found';
+      vi.mocked(pluginApi.install).mockRejectedValue({
+        response: { data: { detail: errorMessage } },
+      });
+
+      render(<PluginsPage />);
+
+      await waitFor(() => {
+        expect(screen.getByText('Plugin Management')).toBeInTheDocument();
+      });
+
+      const installButtons = screen.getAllByRole('button', { name: /install plugin/i });
+      await user.click(installButtons[0]);
+
+      await waitFor(() => {
+        expect(screen.getByRole('dialog')).toBeInTheDocument();
+      });
+
+      const input = screen.getByPlaceholderText('e.g., image-processor, video-editor');
+      await user.type(input, 'invalid-plugin');
+
+      const submitButton = screen.getByRole('button', { name: /^install$/i });
+      await user.click(submitButton);
+
+      await waitFor(() => {
+        expect(message.error).toHaveBeenCalledWith(errorMessage);
+      });
+    });
+
+    it('should show generic error message when install error has no detail', async () => {
+      const { message } = await import('antd');
+      const user = userEvent.setup();
+      vi.mocked(pluginApi.install).mockRejectedValue(new Error('Network error'));
+
+      render(<PluginsPage />);
+
+      await waitFor(() => {
+        expect(screen.getByText('Plugin Management')).toBeInTheDocument();
+      });
+
+      const installButtons = screen.getAllByRole('button', { name: /install plugin/i });
+      await user.click(installButtons[0]);
+
+      await waitFor(() => {
+        expect(screen.getByRole('dialog')).toBeInTheDocument();
+      });
+
+      const input = screen.getByPlaceholderText('e.g., image-processor, video-editor');
+      await user.type(input, 'test-plugin');
+
+      const submitButton = screen.getByRole('button', { name: /^install$/i });
+      await user.click(submitButton);
+
+      await waitFor(() => {
+        expect(message.error).toHaveBeenCalledWith('Failed to install plugin');
+      });
+    });
+
+    it('should close modal and reset form after successful install', async () => {
+      const user = userEvent.setup();
+      vi.mocked(pluginApi.install).mockResolvedValue({
+        message: 'Plugin installed successfully',
+      });
+
+      render(<PluginsPage />);
+
+      await waitFor(() => {
+        expect(screen.getByText('Plugin Management')).toBeInTheDocument();
+      });
+
+      const installButtons = screen.getAllByRole('button', { name: /install plugin/i });
+      await user.click(installButtons[0]);
+
+      await waitFor(() => {
+        expect(screen.getByRole('dialog')).toBeInTheDocument();
+      });
+
+      const input = screen.getByPlaceholderText('e.g., image-processor, video-editor');
+      await user.type(input, 'new-plugin');
+
+      const submitButton = screen.getByRole('button', { name: /^install$/i });
+      await user.click(submitButton);
+
+      await waitFor(() => {
+        expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+      });
+    });
+
+    it('should validate plugin name is required', async () => {
+      const user = userEvent.setup();
+      render(<PluginsPage />);
+
+      await waitFor(() => {
+        expect(screen.getByText('Plugin Management')).toBeInTheDocument();
+      });
+
+      const installButtons = screen.getAllByRole('button', { name: /install plugin/i });
+      await user.click(installButtons[0]);
+
+      await waitFor(() => {
+        expect(screen.getByRole('dialog')).toBeInTheDocument();
+      });
+
+      const submitButton = screen.getByRole('button', { name: /^install$/i });
+      await user.click(submitButton);
+
+      await waitFor(() => {
+        expect(screen.getByText('Please enter plugin name')).toBeInTheDocument();
+      });
+    });
+  });
+
   describe('API Integration', () => {
     it('should call install API with correct parameters', async () => {
       vi.mocked(pluginApi.install).mockResolvedValue({

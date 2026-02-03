@@ -343,4 +343,309 @@ describe('SchedulerPage', () => {
       });
     });
   });
+
+  describe('Create Task Modal', () => {
+    it('should open create modal when create button is clicked', async () => {
+      const user = userEvent.setup();
+      render(<SchedulerPage />);
+
+      await waitFor(() => {
+        expect(screen.getByText('Daily Video Generation')).toBeInTheDocument();
+      });
+
+      const createButton = screen.getByRole('button', { name: /create task/i });
+      await user.click(createButton);
+
+      await waitFor(() => {
+        expect(screen.getByRole('dialog')).toBeInTheDocument();
+        // Check for modal content instead of title
+        expect(screen.getByLabelText(/task name/i)).toBeInTheDocument();
+      });
+    });
+
+    it('should create task when form is submitted', async () => {
+      const { message } = await import('antd');
+      const user = userEvent.setup();
+      vi.mocked(schedulerApi.createTask).mockResolvedValue({
+        id: 5,
+        name: 'New Task',
+        task_type: 'custom',
+        status: 'pending',
+      });
+
+      render(<SchedulerPage />);
+
+      await waitFor(() => {
+        expect(screen.getByText('Daily Video Generation')).toBeInTheDocument();
+      });
+
+      const createButton = screen.getByRole('button', { name: /create task/i });
+      await user.click(createButton);
+
+      await waitFor(() => {
+        expect(screen.getByRole('dialog')).toBeInTheDocument();
+      });
+
+      // Fill in required fields
+      const nameInput = screen.getByLabelText(/task name/i);
+      await user.type(nameInput, 'New Task');
+
+      // Select task type (required field)
+      const taskTypeSelect = screen.getByLabelText(/task type/i);
+      await user.click(taskTypeSelect);
+
+      await waitFor(() => {
+        const customOptions = screen.getAllByText('Custom');
+        expect(customOptions.length).toBeGreaterThan(0);
+      }, { timeout: 3000 });
+
+      // Get all "Custom" elements and click the one in the dropdown (last one)
+      const customOptions = screen.getAllByText('Custom');
+      await user.click(customOptions[customOptions.length - 1]);
+
+      // Wait a bit for the select to close
+      await waitFor(() => {
+        const submitButton = screen.getByRole('button', { name: /^create$/i });
+        expect(submitButton).toBeInTheDocument();
+      });
+
+      // Submit form
+      const submitButton = screen.getByRole('button', { name: /^create$/i });
+      await user.click(submitButton);
+
+      await waitFor(() => {
+        expect(schedulerApi.createTask).toHaveBeenCalled();
+        expect(message.success).toHaveBeenCalledWith('Task created successfully');
+      }, { timeout: 3000 });
+    }, 10000); // Increase timeout to 10 seconds
+
+    it('should show error message on create failure', async () => {
+      const { message } = await import('antd');
+      const user = userEvent.setup();
+      const errorMessage = 'Invalid task data';
+      vi.mocked(schedulerApi.createTask).mockRejectedValue({
+        response: { data: { detail: errorMessage } },
+      });
+
+      render(<SchedulerPage />);
+
+      await waitFor(() => {
+        expect(screen.getByText('Daily Video Generation')).toBeInTheDocument();
+      });
+
+      const createButton = screen.getByRole('button', { name: /create task/i });
+      await user.click(createButton);
+
+      await waitFor(() => {
+        expect(screen.getByRole('dialog')).toBeInTheDocument();
+      });
+
+      const nameInput = screen.getByLabelText(/task name/i);
+      await user.type(nameInput, 'New Task');
+
+      // Select task type
+      const taskTypeSelect = screen.getByLabelText(/task type/i);
+      await user.click(taskTypeSelect);
+      await waitFor(() => {
+        const customOptions = screen.getAllByText('Custom');
+        expect(customOptions.length).toBeGreaterThan(0);
+      });
+      // Get all "Custom" elements and click the one in the dropdown (last one)
+      const customOptions = screen.getAllByText('Custom');
+      await user.click(customOptions[customOptions.length - 1]);
+
+      const submitButton = screen.getByRole('button', { name: /^create$/i });
+      await user.click(submitButton);
+
+      await waitFor(() => {
+        expect(message.error).toHaveBeenCalledWith(errorMessage);
+      });
+    });
+
+    it('should close modal when cancel button is clicked', async () => {
+      const user = userEvent.setup();
+      render(<SchedulerPage />);
+
+      await waitFor(() => {
+        expect(screen.getByText('Daily Video Generation')).toBeInTheDocument();
+      });
+
+      const createButton = screen.getByRole('button', { name: /create task/i });
+      await user.click(createButton);
+
+      await waitFor(() => {
+        expect(screen.getByRole('dialog')).toBeInTheDocument();
+      });
+
+      const cancelButton = screen.getByRole('button', { name: /cancel/i });
+      await user.click(cancelButton);
+
+      await waitFor(() => {
+        expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+      });
+    });
+  });
+
+  describe('Edit Task Modal', () => {
+    it('should open edit modal when edit button is clicked', async () => {
+      const user = userEvent.setup();
+      render(<SchedulerPage />);
+
+      await waitFor(() => {
+        expect(screen.getByText('Daily Video Generation')).toBeInTheDocument();
+      });
+
+      const editButtons = screen.getAllByRole('button', { name: /edit/i });
+      await user.click(editButtons[0]);
+
+      await waitFor(() => {
+        expect(screen.getByRole('dialog')).toBeInTheDocument();
+        // Check for populated form field
+        expect(screen.getByDisplayValue('Daily Video Generation')).toBeInTheDocument();
+      });
+    });
+
+    it('should populate form with task data when editing', async () => {
+      const user = userEvent.setup();
+      render(<SchedulerPage />);
+
+      await waitFor(() => {
+        expect(screen.getByText('Daily Video Generation')).toBeInTheDocument();
+      });
+
+      const editButtons = screen.getAllByRole('button', { name: /edit/i });
+      await user.click(editButtons[0]);
+
+      await waitFor(() => {
+        expect(screen.getByRole('dialog')).toBeInTheDocument();
+      });
+
+      // Check that form is populated with existing task data
+      expect(screen.getByDisplayValue('Daily Video Generation')).toBeInTheDocument();
+      expect(screen.getByDisplayValue('Generate daily videos')).toBeInTheDocument();
+      expect(screen.getByDisplayValue('0 0 * * *')).toBeInTheDocument();
+    });
+
+    it('should update task when form is submitted', async () => {
+      const { message } = await import('antd');
+      const user = userEvent.setup();
+      vi.mocked(schedulerApi.updateTask).mockResolvedValue({
+        id: 1,
+        name: 'Updated Task',
+        status: 'completed',
+      });
+
+      render(<SchedulerPage />);
+
+      await waitFor(() => {
+        expect(screen.getByText('Daily Video Generation')).toBeInTheDocument();
+      });
+
+      const editButtons = screen.getAllByRole('button', { name: /edit/i });
+      await user.click(editButtons[0]);
+
+      await waitFor(() => {
+        expect(screen.getByRole('dialog')).toBeInTheDocument();
+      });
+
+      const nameInput = screen.getByDisplayValue('Daily Video Generation');
+      await user.clear(nameInput);
+      await user.type(nameInput, 'Updated Task');
+
+      const submitButton = screen.getByRole('button', { name: /^update$/i });
+      await user.click(submitButton);
+
+      await waitFor(() => {
+        expect(schedulerApi.updateTask).toHaveBeenCalled();
+        expect(message.success).toHaveBeenCalledWith('Task updated successfully');
+      });
+    });
+
+    it('should show error message on update failure', async () => {
+      const { message } = await import('antd');
+      const user = userEvent.setup();
+      const errorMessage = 'Update failed';
+      vi.mocked(schedulerApi.updateTask).mockRejectedValue({
+        response: { data: { detail: errorMessage } },
+      });
+
+      render(<SchedulerPage />);
+
+      await waitFor(() => {
+        expect(screen.getByText('Daily Video Generation')).toBeInTheDocument();
+      });
+
+      const editButtons = screen.getAllByRole('button', { name: /edit/i });
+      await user.click(editButtons[0]);
+
+      await waitFor(() => {
+        expect(screen.getByRole('dialog')).toBeInTheDocument();
+      });
+
+      const submitButton = screen.getByRole('button', { name: /^update$/i });
+      await user.click(submitButton);
+
+      await waitFor(() => {
+        expect(message.error).toHaveBeenCalledWith(errorMessage);
+      });
+    });
+  });
+
+  describe('Delete Task', () => {
+    it('should delete task when delete button is clicked and confirmed', async () => {
+      const { message } = await import('antd');
+      const user = userEvent.setup();
+      vi.mocked(schedulerApi.deleteTask).mockResolvedValue(undefined);
+
+      render(<SchedulerPage />);
+
+      await waitFor(() => {
+        expect(screen.getByText('Daily Video Generation')).toBeInTheDocument();
+      });
+
+      const deleteButtons = screen.getAllByRole('button', { name: /delete/i });
+      await user.click(deleteButtons[0]);
+
+      // Confirm deletion in popconfirm
+      await waitFor(() => {
+        const confirmButton = screen.getByRole('button', { name: /yes/i });
+        expect(confirmButton).toBeInTheDocument();
+      });
+
+      const confirmButton = screen.getByRole('button', { name: /yes/i });
+      await user.click(confirmButton);
+
+      await waitFor(() => {
+        expect(schedulerApi.deleteTask).toHaveBeenCalledWith(1);
+        expect(message.success).toHaveBeenCalledWith('Task deleted successfully');
+      });
+    });
+
+    it('should show error message on delete failure', async () => {
+      const { message } = await import('antd');
+      const user = userEvent.setup();
+      vi.mocked(schedulerApi.deleteTask).mockRejectedValue(new Error('Delete failed'));
+
+      render(<SchedulerPage />);
+
+      await waitFor(() => {
+        expect(screen.getByText('Daily Video Generation')).toBeInTheDocument();
+      });
+
+      const deleteButtons = screen.getAllByRole('button', { name: /delete/i });
+      await user.click(deleteButtons[0]);
+
+      await waitFor(() => {
+        const confirmButton = screen.getByRole('button', { name: /yes/i });
+        expect(confirmButton).toBeInTheDocument();
+      });
+
+      const confirmButton = screen.getByRole('button', { name: /yes/i });
+      await user.click(confirmButton);
+
+      await waitFor(() => {
+        expect(message.error).toHaveBeenCalledWith('Failed to delete task');
+      });
+    });
+  });
 });
