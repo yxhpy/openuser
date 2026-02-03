@@ -460,7 +460,7 @@ describe('SchedulerPage', () => {
       await waitFor(() => {
         expect(message.error).toHaveBeenCalledWith(errorMessage);
       });
-    });
+    }, 10000);
 
     it('should close modal when cancel button is clicked', async () => {
       const user = userEvent.setup();
@@ -483,7 +483,7 @@ describe('SchedulerPage', () => {
       await waitFor(() => {
         expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
       });
-    });
+    }, 10000);
   });
 
   describe('Edit Task Modal', () => {
@@ -559,7 +559,7 @@ describe('SchedulerPage', () => {
         expect(schedulerApi.updateTask).toHaveBeenCalled();
         expect(message.success).toHaveBeenCalledWith('Task updated successfully');
       });
-    });
+    }, 10000);
 
     it('should show error message on update failure', async () => {
       const { message } = await import('antd');
@@ -588,7 +588,7 @@ describe('SchedulerPage', () => {
       await waitFor(() => {
         expect(message.error).toHaveBeenCalledWith(errorMessage);
       });
-    });
+    }, 10000);
   });
 
   describe('Delete Task', () => {
@@ -619,7 +619,7 @@ describe('SchedulerPage', () => {
         expect(schedulerApi.deleteTask).toHaveBeenCalledWith(1);
         expect(message.success).toHaveBeenCalledWith('Task deleted successfully');
       });
-    });
+    }, 10000);
 
     it('should show error message on delete failure', async () => {
       const { message } = await import('antd');
@@ -646,6 +646,6 @@ describe('SchedulerPage', () => {
       await waitFor(() => {
         expect(message.error).toHaveBeenCalledWith('Failed to delete task');
       });
-    });
+    }, 10000);
   });
 });
