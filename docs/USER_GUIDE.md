@@ -64,6 +64,182 @@ The API will be available at `http://localhost:8000`.
 2. **Login**: Use `/api/v1/auth/login` to get your access token
 3. **Access the dashboard**: Open the web interface (if frontend is running)
 
+### Starting the Frontend
+
+1. Navigate to the frontend directory:
+```bash
+cd frontend
+```
+
+2. Install dependencies:
+```bash
+npm install
+```
+
+3. Start the development server:
+```bash
+npm run dev
+```
+
+The web interface will be available at `http://localhost:3000`.
+
+## Using the Web Interface
+
+### User Authentication
+
+#### Registration
+1. Open `http://localhost:3000` in your browser
+2. Click **"Sign up"** on the login page
+3. Fill in the registration form:
+   - **Username**: Choose a unique username (3-50 characters)
+   - **Email**: Enter a valid email address
+   - **Password**: Create a strong password (min 8 characters, must include uppercase, lowercase, number, and special character)
+4. Click **"Sign Up"** to create your account
+5. You'll be automatically logged in and redirected to the dashboard
+
+#### Login
+1. Open `http://localhost:3000`
+2. Enter your **username** and **password**
+3. Click **"Sign In"**
+4. You'll be redirected to the dashboard upon successful login
+
+### Dashboard Overview
+
+The dashboard provides a real-time overview of your OpenUser system:
+
+- **Digital Humans**: Total number of digital humans you've created
+- **Plugins**: Number of installed plugins
+- **Agents**: Number of configured AI agents
+- **Scheduled Tasks**: Number of active scheduled tasks
+
+All statistics are fetched in real-time from the API and update automatically.
+
+### Navigation
+
+Use the sidebar menu to navigate between sections:
+- **Dashboard** - System overview with statistics
+- **Digital Humans** - Create and manage AI avatars
+- **Agents** - Configure AI agents with custom prompts
+- **Plugins** - Install and manage plugins
+- **Scheduler** - Create and manage scheduled tasks
+
+### Managing Agents (Web Interface)
+
+#### Creating an Agent
+1. Navigate to **Agents** in the sidebar
+2. Click **"Create Agent"** button
+3. Fill in the agent details:
+   - **Name**: Unique identifier (e.g., "assistant", "researcher")
+   - **System Prompt**: Define the agent's behavior and personality
+   - **Capabilities**: Comma-separated list (e.g., "plugin-install, self-update")
+4. Click **"Create"** to save
+
+#### Example System Prompts
+- **General Assistant**: "You are a helpful AI assistant. Provide clear, concise, and accurate responses."
+- **Code Reviewer**: "You are an expert code reviewer. Analyze code for bugs, security issues, and best practices."
+- **Content Writer**: "You are a creative content writer. Generate engaging, well-structured content."
+
+#### Editing an Agent
+1. Navigate to **Agents**
+2. Find the agent in the table
+3. Click **"Edit"** button
+4. Modify the system prompt or capabilities
+5. Click **"Update"** to save changes
+
+#### Deleting an Agent
+1. Navigate to **Agents**
+2. Find the agent in the table
+3. Click **"Delete"** button
+4. Confirm the deletion in the popup
+
+### Managing Plugins (Web Interface)
+
+#### Viewing Installed Plugins
+1. Navigate to **Plugins** in the sidebar
+2. View the list of installed plugins with:
+   - Plugin name and version
+   - Dependencies
+   - Status (Active)
+   - Actions (Reload button)
+
+#### Installing a Plugin
+1. Navigate to **Plugins**
+2. Click **"Install Plugin"** button
+3. Enter the plugin name in the modal
+4. Click **"Install"**
+5. Wait for installation to complete
+6. The plugin list will refresh automatically
+
+#### Hot-Reloading a Plugin
+1. Navigate to **Plugins**
+2. Find the plugin you want to reload
+3. Click the **"Reload"** button
+4. The plugin will be reloaded without system restart
+5. A success message will confirm the reload
+
+### Managing Scheduled Tasks (Web Interface)
+
+#### Creating a Task
+1. Navigate to **Scheduler** in the sidebar
+2. Click **"Create Task"** button
+3. Fill in the task details:
+   - **Task Name**: Descriptive name
+   - **Description**: Optional task description
+   - **Task Type**: Select from dropdown (Video Generation, Voice Synthesis, etc.)
+   - **Schedule**: Cron expression (e.g., `0 0 * * *` for daily at midnight)
+   - **Parameters**: JSON object with task-specific parameters
+4. Click **"Create"** to save
+
+#### Cron Expression Examples
+- `0 0 * * *` - Daily at midnight
+- `0 */6 * * *` - Every 6 hours
+- `0 9 * * 1-5` - Weekdays at 9 AM
+- `*/30 * * * *` - Every 30 minutes
+
+#### Viewing Task Status
+The task list shows:
+- **ID**: Task identifier
+- **Name**: Task name
+- **Type**: Task type (Video Generation, Voice Synthesis, etc.)
+- **Status**: Current status with color coding:
+  - **Pending** (gray): Waiting to run
+  - **Running** (blue): Currently executing
+  - **Completed** (green): Successfully finished
+  - **Failed** (red): Encountered an error
+  - **Cancelled** (orange): Manually stopped
+- **Schedule**: Cron expression
+- **Created**: Creation timestamp
+
+#### Filtering Tasks
+Use the filter dropdowns above the table:
+- **Filter by Status**: Show only tasks with a specific status
+- **Filter by Type**: Show only tasks of a specific type
+- Click **"Refresh"** to reload the task list
+
+#### Editing a Task
+1. Navigate to **Scheduler**
+2. Find the task in the table
+3. Click **"Edit"** button
+4. Modify the task details (name, description, schedule, parameters, status)
+5. Click **"Update"** to save changes
+
+**Note**: Task type cannot be changed after creation.
+
+#### Deleting a Task
+1. Navigate to **Scheduler**
+2. Find the task in the table
+3. Click **"Delete"** button
+4. Confirm the deletion in the popup
+
+### Statistics and Monitoring
+
+The dashboard and individual pages show real-time statistics:
+- **Dashboard**: Overall system statistics
+- **Plugins Page**: Total plugins and active plugins count
+- **Scheduler Page**: Task statistics by status (Total, Pending, Running, Completed, Failed)
+
+All statistics update automatically when you perform actions (create, update, delete).
+
 ## Creating Your First Digital Human
 
 ### Step 1: Prepare Your Assets

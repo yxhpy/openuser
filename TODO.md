@@ -197,8 +197,8 @@
 - [x] Frontend testing guide
 - [x] API inconsistencies analysis
 - [x] Type generation documentation
-- [ ] User guide
-- [ ] Developer guide
+- [x] User guide - 2026-02-03
+- [x] Developer guide - 2026-02-03
 - [ ] Integration guides
 - [x] Troubleshooting guide
 

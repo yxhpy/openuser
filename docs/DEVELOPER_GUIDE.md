@@ -580,6 +580,380 @@ def test_process_endpoint():
     assert response.json()["status"] == "success"
 ```
 
+## Frontend Development
+
+### Frontend Stack
+
+The OpenUser frontend is built with modern web technologies:
+
+- **React 18** - UI library
+- **TypeScript** - Type-safe JavaScript
+- **Vite** - Build tool and dev server
+- **Ant Design** - UI component library
+- **Zustand** - State management
+- **React Router** - Client-side routing
+- **Axios** - HTTP client
+
+### Frontend Setup
+
+```bash
+# Navigate to frontend directory
+cd frontend
+
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+
+# Build for production
+npm run build
+
+# Run tests
+npm test
+
+# Run tests with coverage
+npm test -- --coverage
+```
+
+The frontend will be available at `http://localhost:3000`.
+
+### Project Structure
+
+```
+frontend/
+├── src/
+│   ├── api/                    # API client modules
+│   │   ├── client.ts          # Base HTTP client
+│   │   ├── auth.ts            # Authentication API
+│   │   ├── digitalHuman.ts    # Digital human API
+│   │   ├── plugins.ts         # Plugin management API
+│   │   ├── scheduler.ts       # Task scheduler API
+│   │   └── agents.ts          # Agent management API
+│   ├── pages/                  # Page components
+│   │   ├── auth/              # Login, Register
+│   │   ├── dashboard/         # Dashboard page
+│   │   ├── agents/            # Agent management
+│   │   ├── plugins/           # Plugin management
+│   │   ├── scheduler/         # Task scheduler
+│   │   └── digitalHuman/      # Digital human pages
+│   ├── components/             # Reusable components
+│   ├── store/                  # Zustand stores
+│   ├── types/                  # TypeScript types
+│   │   └── generated.ts       # Auto-generated from backend
+│   ├── utils/                  # Utility functions
+│   ├── test/                   # Test utilities
+│   │   └── mocks/             # MSW mock handlers
+│   ├── router.tsx             # Route configuration
+│   └── main.tsx               # Application entry point
+├── public/                     # Static assets
+├── tests/                      # Test files
+└── package.json               # Dependencies
+```
+
+### Creating a New Page
+
+1. Create the page component:
+
+```typescript
+// src/pages/myfeature/MyFeaturePage.tsx
+import { useState, useEffect } from 'react';
+import { Card, Button, message } from 'antd';
+import { myFeatureApi } from '@/api/myfeature';
+
+export const MyFeaturePage: React.FC = () => {
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  const loadData = async () => {
+    setLoading(true);
+    try {
+      const response = await myFeatureApi.list();
+      setData(response.items);
+    } catch (error) {
+      message.error('Failed to load data');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <Card loading={loading}>
+      <h2>My Feature</h2>
+      {/* Your UI here */}
+    </Card>
+  );
+};
+```
+
+2. Add the route:
+
+```typescript
+// src/router.tsx
+import { MyFeaturePage } from '@/pages/myfeature/MyFeaturePage';
+
+const router = createBrowserRouter([
+  // ... existing routes
+  {
+    path: '/myfeature',
+    element: <MyFeaturePage />,
+  },
+]);
+```
+
+3. Add navigation link (if needed):
+
+```typescript
+// Update sidebar navigation
+<Menu.Item key="myfeature" icon={<Icon />}>
+  <Link to="/myfeature">My Feature</Link>
+</Menu.Item>
+```
+
+### Creating an API Client
+
+1. Define TypeScript types (or use generated types):
+
+```typescript
+// src/types/myfeature.ts
+export interface MyFeatureItem {
+  id: number;
+  name: string;
+  status: string;
+}
+
+export interface MyFeatureListResponse {
+  items: MyFeatureItem[];
+  total: number;
+}
+```
+
+2. Create the API client:
+
+```typescript
+// src/api/myfeature.ts
+import { apiClient } from './client';
+import type { MyFeatureItem, MyFeatureListResponse } from '@/types/myfeature';
+
+export const myFeatureApi = {
+  async list(): Promise<MyFeatureListResponse> {
+    const response = await apiClient.get<MyFeatureListResponse>('/api/v1/myfeature/list');
+    return response.data;
+  },
+
+  async create(data: Partial<MyFeatureItem>): Promise<MyFeatureItem> {
+    const response = await apiClient.post<MyFeatureItem>('/api/v1/myfeature/create', data);
+    return response.data;
+  },
+
+  async update(id: number, data: Partial<MyFeatureItem>): Promise<MyFeatureItem> {
+    const response = await apiClient.put<MyFeatureItem>(`/api/v1/myfeature/${id}`, data);
+    return response.data;
+  },
+
+  async delete(id: number): Promise<void> {
+    await apiClient.delete(`/api/v1/myfeature/${id}`);
+  },
+};
+```
+
+### Frontend Testing
+
+#### Test Structure
+
+```
+frontend/
+├── src/
+│   ├── pages/
+│   │   └── myfeature/
+│   │       ├── MyFeaturePage.tsx
+│   │       └── __tests__/
+│   │           └── MyFeaturePage.test.tsx
+│   └── api/
+│       └── __tests__/
+│           └── myfeature.test.ts
+└── test/
+    ├── setup.ts              # Test setup
+    ├── utils.tsx             # Test utilities
+    └── mocks/
+        ├── handlers.ts       # MSW handlers
+        └── server.ts         # MSW server
+```
+
+#### Writing Component Tests
+
+```typescript
+// src/pages/myfeature/__tests__/MyFeaturePage.test.tsx
+import { describe, it, expect } from 'vitest';
+import { render, screen, waitFor } from '@/test/utils';
+import { MyFeaturePage } from '../MyFeaturePage';
+import userEvent from '@testing-library/user-event';
+
+describe('MyFeaturePage', () => {
+  it('should render page title', () => {
+    render(<MyFeaturePage />);
+    expect(screen.getByText('My Feature')).toBeInTheDocument();
+  });
+
+  it('should load and display data', async () => {
+    render(<MyFeaturePage />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Test Item')).toBeInTheDocument();
+    });
+  });
+
+  it('should create new item', async () => {
+    const user = userEvent.setup();
+    render(<MyFeaturePage />);
+
+    const createButton = screen.getByRole('button', { name: /create/i });
+    await user.click(createButton);
+
+    // Fill form and submit
+    const nameInput = screen.getByLabelText(/name/i);
+    await user.type(nameInput, 'New Item');
+
+    const submitButton = screen.getByRole('button', { name: /submit/i });
+    await user.click(submitButton);
+
+    await waitFor(() => {
+      expect(screen.getByText('New Item')).toBeInTheDocument();
+    });
+  });
+});
+```
+
+#### Adding MSW Handlers
+
+```typescript
+// test/mocks/handlers.ts
+import { http, HttpResponse } from 'msw';
+
+export const handlers = [
+  // ... existing handlers
+
+  http.get('http://localhost:8000/api/v1/myfeature/list', () => {
+    return HttpResponse.json({
+      items: [
+        { id: 1, name: 'Test Item', status: 'active' },
+      ],
+      total: 1,
+    });
+  }),
+
+  http.post('http://localhost:8000/api/v1/myfeature/create', async ({ request }) => {
+    const body = await request.json();
+    return HttpResponse.json({
+      id: 2,
+      ...body,
+    });
+  }),
+];
+```
+
+### Type Generation
+
+When you modify backend Pydantic schemas, TypeScript types are automatically generated:
+
+1. Edit `src/api/schemas.py`:
+
+```python
+from pydantic import BaseModel
+
+class MyFeatureRequest(BaseModel):
+    name: str
+    description: str | None = None
+
+class MyFeatureResponse(BaseModel):
+    id: int
+    name: str
+    description: str | None
+    created_at: str
+```
+
+2. Run type generation (or commit - pre-commit hook will run it):
+
+```bash
+python scripts/generate_types.py
+```
+
+3. Use generated types in frontend:
+
+```typescript
+import type { MyFeatureRequest, MyFeatureResponse } from '@/types/generated';
+
+const createFeature = async (data: MyFeatureRequest): Promise<MyFeatureResponse> => {
+  // ...
+};
+```
+
+### State Management
+
+Use Zustand for global state:
+
+```typescript
+// src/store/myFeatureStore.ts
+import { create } from 'zustand';
+import type { MyFeatureItem } from '@/types/myfeature';
+
+interface MyFeatureState {
+  items: MyFeatureItem[];
+  loading: boolean;
+  setItems: (items: MyFeatureItem[]) => void;
+  setLoading: (loading: boolean) => void;
+}
+
+export const useMyFeatureStore = create<MyFeatureState>((set) => ({
+  items: [],
+  loading: false,
+  setItems: (items) => set({ items }),
+  setLoading: (loading) => set({ loading }),
+}));
+```
+
+Use in components:
+
+```typescript
+import { useMyFeatureStore } from '@/store/myFeatureStore';
+
+export const MyFeaturePage: React.FC = () => {
+  const { items, loading, setItems, setLoading } = useMyFeatureStore();
+
+  // ...
+};
+```
+
+### Best Practices
+
+#### Component Design
+- Keep components small and focused
+- Use TypeScript for type safety
+- Extract reusable logic into custom hooks
+- Use Ant Design components for consistency
+
+#### API Integration
+- Always handle loading states
+- Show user-friendly error messages
+- Use try-catch for error handling
+- Implement proper error boundaries
+
+#### Testing
+- Write tests for all pages and components
+- Use MSW for API mocking
+- Test user interactions with userEvent
+- Aim for high test coverage (>80%)
+
+#### Performance
+- Use React.memo for expensive components
+- Implement proper loading states
+- Lazy load routes with React.lazy
+- Optimize images and assets
+
 ## Testing
 
 ### Test Structure
