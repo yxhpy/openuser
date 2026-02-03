@@ -1,0 +1,16 @@
+apiVersion: v2
+name: openuser
+description: A Helm chart for OpenUser - Intelligent Digital Human System
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+keywords:
+  - digital-human
+  - ai
+  - fastapi
+  - plugin-system
+maintainers:
+  - name: OpenUser Team
+    email: yxhpy@example.com
+sources:
+  - https://github.com/yxhpy/openuser

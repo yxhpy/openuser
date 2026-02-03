@@ -1,0 +1,91 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: openuser-celery-worker
+  namespace: openuser
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: openuser-celery-worker
+  template:
+    metadata:
+      labels:
+        app: openuser-celery-worker
+    spec:
+      containers:
+      - name: celery-worker
+        image: openuser/api:latest
+        command: ["celery", "-A", "src.scheduler.celery_app", "worker", "--loglevel=info"]
+        envFrom:
+        - configMapRef:
+            name: openuser-config
+        env:
+        - name: DATABASE_URL
+          value: "postgresql://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@openuser-postgres:5432/$(POSTGRES_DB)"
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: openuser-secrets
+              key: POSTGRES_PASSWORD
+        volumeMounts:
+        - name: models
+          mountPath: /app/models
+        - name: cache
+          mountPath: /app/cache
+        - name: uploads
+          mountPath: /app/uploads
+        resources:
+          requests:
+            memory: "1Gi"
+            cpu: "500m"
+          limits:
+            memory: "4Gi"
+            cpu: "2000m"
+      volumes:
+      - name: models
+        persistentVolumeClaim:
+          claimName: models-pvc
+      - name: cache
+        emptyDir: {}
+      - name: uploads
+        persistentVolumeClaim:
+          claimName: uploads-pvc
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: openuser-celery-beat
+  namespace: openuser
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: openuser-celery-beat
+  template:
+    metadata:
+      labels:
+        app: openuser-celery-beat
+    spec:
+      containers:
+      - name: celery-beat
+        image: openuser/api:latest
+        command: ["celery", "-A", "src.scheduler.celery_app", "beat", "--loglevel=info"]
+        envFrom:
+        - configMapRef:
+            name: openuser-config
+        env:
+        - name: DATABASE_URL
+          value: "postgresql://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@openuser-postgres:5432/$(POSTGRES_DB)"
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: openuser-secrets
+              key: POSTGRES_PASSWORD
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "250m"

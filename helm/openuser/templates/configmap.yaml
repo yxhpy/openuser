@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: openuser-config
+  namespace: {{ .Values.global.namespace }}
+data:
+  OPENUSER_ENV: {{ .Values.api.env.OPENUSER_ENV | quote }}
+  OPENUSER_DEBUG: {{ .Values.api.env.OPENUSER_DEBUG | quote }}
+  OPENUSER_API_HOST: {{ .Values.api.env.OPENUSER_API_HOST | quote }}
+  OPENUSER_API_PORT: {{ .Values.api.env.OPENUSER_API_PORT | quote }}
+  JWT_ALGORITHM: {{ .Values.api.env.JWT_ALGORITHM | quote }}
+  JWT_ACCESS_TOKEN_EXPIRE_MINUTES: {{ .Values.api.env.JWT_ACCESS_TOKEN_EXPIRE_MINUTES | quote }}
+  JWT_REFRESH_TOKEN_EXPIRE_DAYS: {{ .Values.api.env.JWT_REFRESH_TOKEN_EXPIRE_DAYS | quote }}
+  MODEL_PATH: {{ .Values.api.env.MODEL_PATH | quote }}
+  DEVICE: {{ .Values.api.env.DEVICE | quote }}
+  POSTGRES_DB: {{ .Values.postgresql.auth.database | quote }}
+  POSTGRES_USER: {{ .Values.postgresql.auth.username | quote }}
+  REDIS_URL: "redis://openuser-redis:6379/0"
+  CELERY_BROKER_URL: "redis://openuser-redis:6379/1"
+  CELERY_RESULT_BACKEND: "redis://openuser-redis:6379/2"

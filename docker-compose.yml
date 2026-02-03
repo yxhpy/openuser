@@ -1,0 +1,151 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: openuser-postgres
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-openuser}
+      POSTGRES_USER: ${POSTGRES_USER:-openuser}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-openuser}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - openuser-network
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: openuser-redis
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - openuser-network
+
+  # OpenUser API Server
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: openuser-api
+    environment:
+      # Database
+      DATABASE_URL: postgresql://${POSTGRES_USER:-openuser}:${POSTGRES_PASSWORD:-changeme}@postgres:5432/${POSTGRES_DB:-openuser}
+      # Redis
+      REDIS_URL: redis://redis:6379/0
+      # API Configuration
+      OPENUSER_ENV: ${OPENUSER_ENV:-production}
+      OPENUSER_DEBUG: ${OPENUSER_DEBUG:-false}
+      OPENUSER_API_HOST: 0.0.0.0
+      OPENUSER_API_PORT: 8000
+      # JWT Secret
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY:-changeme-generate-secure-key}
+      JWT_ALGORITHM: HS256
+      JWT_ACCESS_TOKEN_EXPIRE_MINUTES: 30
+      JWT_REFRESH_TOKEN_EXPIRE_DAYS: 7
+      # Model Configuration
+      MODEL_PATH: /app/models
+      DEVICE: ${DEVICE:-cpu}
+    volumes:
+      - ./data:/app/data
+      - ./models:/app/models
+      - ./cache:/app/cache
+      - ./uploads:/app/uploads
+    ports:
+      - "${API_PORT:-8000}:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - openuser-network
+    restart: unless-stopped
+
+  # Celery Worker for Background Tasks
+  celery-worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: openuser-celery-worker
+    command: celery -A src.scheduler.celery_app worker --loglevel=info
+    environment:
+      # Database
+      DATABASE_URL: postgresql://${POSTGRES_USER:-openuser}:${POSTGRES_PASSWORD:-changeme}@postgres:5432/${POSTGRES_DB:-openuser}
+      # Redis
+      REDIS_URL: redis://redis:6379/0
+      CELERY_BROKER_URL: redis://redis:6379/1
+      CELERY_RESULT_BACKEND: redis://redis:6379/2
+      # Model Configuration
+      MODEL_PATH: /app/models
+      DEVICE: ${DEVICE:-cpu}
+    volumes:
+      - ./data:/app/data
+      - ./models:/app/models
+      - ./cache:/app/cache
+      - ./uploads:/app/uploads
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - openuser-network
+    restart: unless-stopped
+
+  # Celery Beat for Scheduled Tasks
+  celery-beat:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: openuser-celery-beat
+    command: celery -A src.scheduler.celery_app beat --loglevel=info
+    environment:
+      # Database
+      DATABASE_URL: postgresql://${POSTGRES_USER:-openuser}:${POSTGRES_PASSWORD:-changeme}@postgres:5432/${POSTGRES_DB:-openuser}
+      # Redis
+      REDIS_URL: redis://redis:6379/0
+      CELERY_BROKER_URL: redis://redis:6379/1
+      CELERY_RESULT_BACKEND: redis://redis:6379/2
+    volumes:
+      - ./data:/app/data
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - openuser-network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  openuser-network:
+    driver: bridge
