@@ -158,7 +158,16 @@ The `start-dev` skill will:
 
 ### Run Tests
 ```bash
+# Run all tests with coverage
 pytest --cov --cov-fail-under=100
+
+# Run performance tests (without coverage)
+bash scripts/run_performance_tests.sh
+
+# Run load tests
+# 1. Start API server: uvicorn src.api.main:app --reload
+# 2. Run locust: locust -f tests/performance/locustfile.py --host=http://localhost:8000
+# 3. Open http://localhost:8089 in browser
 ```
 
 ### Start API Server
