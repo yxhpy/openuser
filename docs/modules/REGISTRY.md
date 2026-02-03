@@ -134,6 +134,41 @@ This registry tracks all implemented modules to prevent duplication and facilita
   - Capability management
   - Memory tracking
 
+### Self-Evolving Agent System
+- **Path**: `src/core/self_evolving_agent.py`
+- **Purpose**: Advanced AI agent with self-evolution capabilities
+- **Status**: ✅ Implemented (93% test coverage)
+- **Test Coverage**: 93%
+- **Dependencies**: AgentManager, PluginManager
+- **API**:
+  - `SelfEvolvingAgent.__init__(name, system_prompt, capabilities, plugin_manager, context_file)`
+  - `SelfEvolvingAgent.self_update_prompt(new_prompt: str, reason: str) -> Dict`
+  - `SelfEvolvingAgent.auto_install_plugin(plugin_name: str, reason: str) -> Dict`
+  - `SelfEvolvingAgent.create_custom_plugin(name, version, description, capabilities, custom_code) -> Dict`
+  - `SelfEvolvingAgent.adjust_environment(key: str, value: Any, reason: str) -> Dict`
+  - `SelfEvolvingAgent.process(input_data: Dict) -> Dict`
+  - `SelfEvolvingAgent.get_learning_stats() -> Dict`
+  - `AgentContext.add_interaction(user_input, agent_response, metadata)`
+  - `AgentContext.learn_pattern(pattern_name, pattern_data)`
+  - `AgentContext.get_pattern(pattern_name) -> Optional[Any]`
+  - `AgentContext.update_environment(key, value)`
+  - `AgentContext.get_environment(key, default) -> Any`
+  - `PluginCreator.generate_plugin_template(name, version, description, capabilities) -> str`
+  - `PluginCreator.create_plugin(name, version, description, plugin_code, output_dir) -> Tuple[bool, str]`
+- **Features**:
+  - Prompt-based self-update with reasoning
+  - Auto-install plugins when needed
+  - Create custom plugins programmatically
+  - Environment parameter adjustment
+  - Context awareness and interaction tracking
+  - Learning from interaction patterns
+  - Autonomous decision making
+  - Error recovery with learning
+  - Context persistence (JSON)
+  - Learning statistics and monitoring
+- **Documentation**: `docs/modules/SELF_EVOLVING_AGENT.md`
+
+
 ### Config Manager
 - **Path**: `src/core/config_manager.py`
 - **Purpose**: Dynamic configuration with hot-reload
