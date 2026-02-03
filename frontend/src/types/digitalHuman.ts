@@ -29,6 +29,8 @@ export interface GenerateVideoRequest {
 
 export interface GenerateVideoResponse {
   video_path: string;
+  digital_human_id: number;
+  mode: string;
   message: string;
 }
 

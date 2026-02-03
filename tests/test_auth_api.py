@@ -79,12 +79,21 @@ class TestUserRegistration:
 
         assert response.status_code == 201
         data = response.json()
-        assert data["username"] == "newuser"
-        assert data["email"] == "newuser@example.com"
-        assert data["is_active"] is True
-        assert data["is_superuser"] is False
-        assert "id" in data
-        assert "created_at" in data
+        # Register now returns TokenResponse with user info
+        assert "access_token" in data
+        assert "refresh_token" in data
+        assert "token_type" in data
+        assert data["token_type"] == "bearer"
+        assert "expires_in" in data
+        assert "user" in data
+        # Check user info
+        user = data["user"]
+        assert user["username"] == "newuser"
+        assert user["email"] == "newuser@example.com"
+        assert user["is_active"] is True
+        assert user["is_superuser"] is False
+        assert "id" in user
+        assert "created_at" in user
 
     def test_register_duplicate_username(self, client, test_user):
         """Test registration with duplicate username."""

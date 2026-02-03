@@ -137,7 +137,14 @@ class UserResponse(BaseModel):
 # Digital Human Schemas
 
 class DigitalHumanCreateRequest(BaseModel):
-    """Request schema for creating a digital human."""
+    """Request schema for creating a digital human.
+
+    Note: The actual API endpoint accepts multipart/form-data with:
+    - name: str (Form field)
+    - description: Optional[str] (Form field)
+    - image: UploadFile (File upload)
+    - voice_model_path: Optional[str] (Form field)
+    """
 
     name: str = Field(..., min_length=1, max_length=100, description="Digital human name")
     description: Optional[str] = Field(default=None, description="Digital human description")
@@ -170,7 +177,14 @@ class DigitalHumanListResponse(BaseModel):
 
 
 class VideoGenerateRequest(BaseModel):
-    """Request schema for video generation."""
+    """Request schema for video generation.
+
+    Note: The actual API endpoint accepts multipart/form-data with:
+    - digital_human_id: int (Form field)
+    - text: Optional[str] (Form field, for text-to-video)
+    - audio: Optional[UploadFile] (File upload, for audio-to-video)
+    - mode: str (Form field, default: "enhanced_talking_head")
+    """
 
     digital_human_id: int = Field(..., description="Digital human ID")
     text: Optional[str] = Field(default=None, description="Text to synthesize (for text-to-video)")

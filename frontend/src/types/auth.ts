@@ -2,9 +2,9 @@ export interface User {
   id: number;
   username: string;
   email: string;
-  is_active?: boolean;
-  is_superuser?: boolean;
-  created_at?: string;
+  is_active: boolean;
+  is_superuser: boolean;
+  created_at: string;
 }
 
 export interface LoginRequest {
@@ -22,6 +22,7 @@ export interface AuthResponse {
   access_token: string;
   refresh_token: string;
   token_type: string;
+  expires_in: number;
   user: User;
 }
 
