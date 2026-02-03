@@ -182,7 +182,7 @@
 - [x] Document all mismatches
 - [x] Create type generation script
 - [x] Fix identified API inconsistencies - 2026-02-03
-- [ ] Add API contract tests
+- [x] Add API contract tests - 2026-02-03
 - [ ] Add pre-commit hook for type generation
 
 ### 8.4 Documentation
