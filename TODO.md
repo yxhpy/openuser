@@ -172,7 +172,9 @@
 - [x] Configure MSW for API mocking
 - [x] Create test utilities and setup
 - [x] Add sample tests (auth API)
-- [ ] Write component tests (LoginPage, RegisterPage, etc.)
+- [x] Write component tests (DashboardPage, PluginsPage, SchedulerPage) - 2026-02-03
+- [x] Write component tests (AgentsPage, Digital Human pages) - 2026-02-03
+- [ ] Write integration tests
 - [ ] Write integration tests
 - [ ] Add E2E tests with Playwright
 - [ ] Achieve 80% coverage target
