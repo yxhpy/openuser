@@ -33,7 +33,7 @@
 - Maintenance tasks
 
 ### 🌐 Multi-Platform Integration
-- **Web Interface**: Full-featured dashboard
+- **Web Interface**: React-based dashboard with real-time updates
 - **Feishu (Lark)**: Bot integration with interactive cards
 - **WeChat Work**: Enterprise messaging integration
 - **API**: RESTful API for custom integrations
@@ -80,7 +80,15 @@ cp .env.example .env
 
 # Start the API server
 uvicorn src.api.main:app --reload
+
+# In a new terminal, start the frontend
+cd frontend
+npm install
+npm run dev
 ```
+
+The API will be available at http://localhost:8000
+The web interface will be available at http://localhost:3000
 
 ### Using Claude Code
 
@@ -115,6 +123,14 @@ openuser/
 │   ├── integrations/      # Platform integrations (Feishu, WeChat)
 │   ├── models/            # Digital human models (TTS, face animation)
 │   └── utils/             # Utilities
+├── frontend/              # React web interface
+│   ├── src/
+│   │   ├── api/          # API client layer
+│   │   ├── components/   # React components
+│   │   ├── pages/        # Page components
+│   │   ├── store/        # State management (Zustand)
+│   │   └── utils/        # Frontend utilities
+│   └── public/           # Static assets
 ├── tests/                 # Test suites (100% coverage)
 ├── docs/                  # Documentation
 ├── .claude/               # Claude Code extensions
