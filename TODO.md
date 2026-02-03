@@ -126,7 +126,7 @@
 - [x] Frontend unit tests (81 tests passing) - 2026-02-03
 - [x] API type generation from Pydantic schemas - 2026-02-03
 - [x] Plugin management UI - 2026-02-03
-- [ ] Task scheduler UI
+- [x] Task scheduler UI - 2026-02-03
 - [ ] E2E tests with Playwright
 - [x] Fix API inconsistencies (6 issues documented) - 2026-02-03
 
