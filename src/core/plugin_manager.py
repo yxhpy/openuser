@@ -5,10 +5,10 @@ This module provides hot-reload capability for plugins without system restart.
 """
 
 import importlib
+import logging
 import sys
 from pathlib import Path
-from typing import Dict, List, Optional, Any
-import logging
+from typing import Any, Dict, List, Optional
 
 from src.core.plugin_config import PluginConfig, PluginConfigSchema
 from src.core.plugin_dependency import DependencyResolver
@@ -103,18 +103,12 @@ class PluginManager:
             plugin = plugin_class()
 
             # Register with dependency resolver
-            self.dependency_resolver.add_plugin(
-                plugin.name,
-                plugin.version,
-                plugin.dependencies
-            )
+            self.dependency_resolver.add_plugin(plugin.name, plugin.version, plugin.dependencies)
 
             # Check dependencies
             satisfied, missing = self.dependency_resolver.check_dependencies(plugin.name)
             if not satisfied:
-                self.logger.error(
-                    f"Plugin {plugin_name} has unsatisfied dependencies: {missing}"
-                )
+                self.logger.error(f"Plugin {plugin_name} has unsatisfied dependencies: {missing}")
                 return None
 
             # Call load hook
@@ -213,7 +207,7 @@ class PluginManager:
         except Exception as e:
             self.logger.error(f"Failed to reload plugin {plugin_name}: {e}")
             # Attempt rollback
-            if plugin_name in self.state_backup:
+            if plugin_name in self.state_backup and plugin is not None:
                 plugin.restore_state(self.state_backup[plugin_name])
             return False
 
@@ -270,4 +264,3 @@ class PluginManager:
             Dictionary mapping plugin names to their dependencies
         """
         return self.dependency_resolver.get_dependency_tree(plugin_name)
-

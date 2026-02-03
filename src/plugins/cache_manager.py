@@ -4,19 +4,14 @@ Cache Manager Plugin
 Provides cache management utilities for the system.
 """
 
-from pathlib import Path
-from typing import Optional, Dict, Any, List
+import hashlib
 import json
 import time
-import hashlib
-import shutil
+from pathlib import Path
+from typing import Any, Dict, Optional
 
+from src.core.plugin_config import ConfigField, ConfigFieldType, PluginConfigSchema
 from src.core.plugin_manager import Plugin
-from src.core.plugin_config import (
-    PluginConfigSchema,
-    ConfigField,
-    ConfigFieldType,
-)
 
 
 class CacheManager(Plugin):
@@ -28,26 +23,32 @@ class CacheManager(Plugin):
 
     # Define configuration schema
     config_schema = PluginConfigSchema()
-    config_schema.add_field(ConfigField(
-        name="cache_dir",
-        field_type=ConfigFieldType.STRING,
-        default="cache",
-        description="Directory for cache storage"
-    ))
-    config_schema.add_field(ConfigField(
-        name="max_size_mb",
-        field_type=ConfigFieldType.INTEGER,
-        default=1024,
-        description="Maximum cache size in MB",
-        validator=lambda x: x > 0
-    ))
-    config_schema.add_field(ConfigField(
-        name="default_ttl",
-        field_type=ConfigFieldType.INTEGER,
-        default=3600,
-        description="Default TTL in seconds",
-        validator=lambda x: x > 0
-    ))
+    config_schema.add_field(
+        ConfigField(
+            name="cache_dir",
+            field_type=ConfigFieldType.STRING,
+            default="cache",
+            description="Directory for cache storage",
+        )
+    )
+    config_schema.add_field(
+        ConfigField(
+            name="max_size_mb",
+            field_type=ConfigFieldType.INTEGER,
+            default=1024,
+            description="Maximum cache size in MB",
+            validator=lambda x: x > 0,
+        )
+    )
+    config_schema.add_field(
+        ConfigField(
+            name="default_ttl",
+            field_type=ConfigFieldType.INTEGER,
+            default=3600,
+            description="Default TTL in seconds",
+            validator=lambda x: x > 0,
+        )
+    )
 
     def __init__(self) -> None:
         super().__init__()
@@ -87,20 +88,17 @@ class CacheManager(Plugin):
 
     def _get_cache_path(self, key: str) -> Path:
         """Get cache file path for key"""
+        assert self._cache_dir is not None, "Cache manager not loaded"
         cache_key = self._get_cache_key(key)
         return self._cache_dir / f"{cache_key}.cache"
 
     def _get_metadata_path(self, key: str) -> Path:
         """Get metadata file path for key"""
+        assert self._cache_dir is not None, "Cache manager not loaded"
         cache_key = self._get_cache_key(key)
         return self._cache_dir / f"{cache_key}.meta"
 
-    def set(
-        self,
-        key: str,
-        value: Any,
-        ttl: Optional[int] = None
-    ) -> bool:
+    def set(self, key: str, value: Any, ttl: Optional[int] = None) -> bool:
         """
         Set cache value
 
@@ -129,7 +127,7 @@ class CacheManager(Plugin):
                 "key": key,
                 "created_at": time.time(),
                 "ttl": ttl,
-                "expires_at": time.time() + ttl
+                "expires_at": time.time() + ttl,
             }
             with open(metadata_path, "w") as f:
                 json.dump(metadata, f)
@@ -230,6 +228,7 @@ class CacheManager(Plugin):
         Returns:
             Number of entries cleared
         """
+        assert self._cache_dir is not None, "Cache manager not loaded"
         try:
             count = 0
             for file in self._cache_dir.glob("*.cache"):
@@ -252,6 +251,7 @@ class CacheManager(Plugin):
         Returns:
             Number of entries removed
         """
+        assert self._cache_dir is not None, "Cache manager not loaded"
         try:
             count = 0
             current_time = time.time()
@@ -289,6 +289,7 @@ class CacheManager(Plugin):
         Returns:
             Total size in bytes
         """
+        assert self._cache_dir is not None, "Cache manager not loaded"
         try:
             total_size = 0
             for file in self._cache_dir.glob("*"):
@@ -307,6 +308,7 @@ class CacheManager(Plugin):
         Returns:
             Dictionary with cache statistics
         """
+        assert self._cache_dir is not None, "Cache manager not loaded"
         hits = self._state["cache_hits"]
         misses = self._state["cache_misses"]
         total = hits + misses
@@ -323,7 +325,7 @@ class CacheManager(Plugin):
             "total_entries": len(cache_files),
             "size_bytes": size_bytes,
             "size_mb": size_mb,
-            "cache_dir": str(self._cache_dir)
+            "cache_dir": str(self._cache_dir),
         }
 
     def enforce_size_limit(self) -> int:
@@ -333,6 +335,7 @@ class CacheManager(Plugin):
         Returns:
             Number of entries removed
         """
+        assert self._cache_dir is not None, "Cache manager not loaded"
         try:
             max_size_mb = self._get_config("max_size_mb", 1024)
             max_size_bytes = max_size_mb * 1024 * 1024
@@ -347,11 +350,9 @@ class CacheManager(Plugin):
                 try:
                     with open(metadata_path, "r") as f:
                         metadata = json.load(f)
-                    cache_files.append((
-                        metadata["created_at"],
-                        metadata_path.stem,
-                        metadata["key"]
-                    ))
+                    cache_files.append(
+                        (metadata["created_at"], metadata_path.stem, metadata["key"])
+                    )
                 except Exception:
                     continue
 

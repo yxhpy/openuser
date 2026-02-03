@@ -4,16 +4,18 @@ Plugin Configuration Schema
 This module provides configuration schema support for plugins.
 """
 
-from typing import Any, Dict, List, Optional, Type, Union
-from pathlib import Path
 import json
-import yaml
-from enum import Enum
 from dataclasses import dataclass, field
+from enum import Enum
+from pathlib import Path
+from typing import Any, Callable, Dict, List, Optional, Type, Union
+
+import yaml
 
 
 class ConfigFieldType(Enum):
     """Configuration field types"""
+
     STRING = "string"
     INTEGER = "integer"
     FLOAT = "float"
@@ -25,12 +27,13 @@ class ConfigFieldType(Enum):
 @dataclass
 class ConfigField:
     """Configuration field definition"""
+
     name: str
     field_type: ConfigFieldType
     required: bool = False
     default: Any = None
     description: str = ""
-    validator: Optional[callable] = None
+    validator: Optional[Callable[[Any], bool]] = None
 
     def validate(self, value: Any) -> bool:
         """
@@ -43,7 +46,7 @@ class ConfigField:
             True if valid, False otherwise
         """
         # Check type
-        type_map = {
+        type_map: Dict[ConfigFieldType, Union[Type[Any], tuple[Type[Any], ...]]] = {
             ConfigFieldType.STRING: str,
             ConfigFieldType.INTEGER: int,
             ConfigFieldType.FLOAT: (int, float),
@@ -66,6 +69,7 @@ class ConfigField:
 @dataclass
 class PluginConfigSchema:
     """Plugin configuration schema"""
+
     fields: List[ConfigField] = field(default_factory=list)
 
     def add_field(self, config_field: ConfigField) -> None:
@@ -97,9 +101,7 @@ class PluginConfigSchema:
             # Validate field value
             value = config[field.name]
             if not field.validate(value):
-                errors.append(
-                    f"Field '{field.name}' has invalid value: {value}"
-                )
+                errors.append(f"Field '{field.name}' has invalid value: {value}")
 
         return len(errors) == 0, errors
 
@@ -128,7 +130,7 @@ class PluginConfig:
         self,
         plugin_name: str,
         schema: Optional[PluginConfigSchema] = None,
-        config_dir: str = "config/plugins"
+        config_dir: str = "config/plugins",
     ) -> None:
         self.plugin_name = plugin_name
         self.schema = schema or PluginConfigSchema()
@@ -230,4 +232,3 @@ class PluginConfig:
             return True
         except Exception:
             return False
-

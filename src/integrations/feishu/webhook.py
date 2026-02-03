@@ -11,12 +11,13 @@ This module handles:
 import hashlib
 import hmac
 import json
-from typing import Dict, Any, Optional, Callable
 from enum import Enum
+from typing import Any, Callable, Dict, Optional
 
 
 class FeishuEventType(str, Enum):
     """Feishu event types."""
+
     URL_VERIFICATION = "url_verification"
     MESSAGE_RECEIVE = "im.message.receive_v1"
     MESSAGE_READ = "im.message.message_read_v1"
@@ -36,11 +37,7 @@ class FeishuWebhookHandler:
         event_handlers: Dict mapping event types to handler functions
     """
 
-    def __init__(
-        self,
-        verification_token: Optional[str] = None,
-        encrypt_key: Optional[str] = None
-    ):
+    def __init__(self, verification_token: Optional[str] = None, encrypt_key: Optional[str] = None):
         """Initialize webhook handler.
 
         Args:
@@ -51,11 +48,7 @@ class FeishuWebhookHandler:
         self.encrypt_key = encrypt_key
         self.event_handlers: Dict[str, Callable] = {}
 
-    def register_handler(
-        self,
-        event_type: str,
-        handler: Callable[[Dict[str, Any]], Any]
-    ) -> None:
+    def register_handler(self, event_type: str, handler: Callable[[Dict[str, Any]], Any]) -> None:
         """Register event handler for specific event type.
 
         Args:
@@ -64,13 +57,7 @@ class FeishuWebhookHandler:
         """
         self.event_handlers[event_type] = handler
 
-    def verify_signature(
-        self,
-        timestamp: str,
-        nonce: str,
-        encrypt: str,
-        signature: str
-    ) -> bool:
+    def verify_signature(self, timestamp: str, nonce: str, encrypt: str, signature: str) -> bool:
         """Verify event signature.
 
         Args:
@@ -139,9 +126,7 @@ class FeishuWebhookHandler:
         return None
 
     def process_webhook(
-        self,
-        body: Dict[str, Any],
-        headers: Optional[Dict[str, str]] = None
+        self, body: Dict[str, Any], headers: Optional[Dict[str, str]] = None
     ) -> Dict[str, Any]:
         """Process incoming webhook request.
 
@@ -170,5 +155,5 @@ class FeishuWebhookHandler:
 
         # Return result or empty success response
         if result:
-            return result
+            return dict(result) if result else {"code": 0, "msg": "success"}
         return {"code": 0, "msg": "success"}

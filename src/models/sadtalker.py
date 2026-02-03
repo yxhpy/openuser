@@ -7,8 +7,7 @@ realistic talking head videos from static images and audio files.
 
 import os
 import tempfile
-from pathlib import Path
-from typing import Optional, Tuple, Union
+from typing import Optional, Tuple
 
 import cv2
 import numpy as np
@@ -62,10 +61,14 @@ class SadTalkerModel:
             raise ValueError("CUDA device requested but not available")
 
         if preprocess not in ["crop", "resize", "full"]:
-            raise ValueError(f"Invalid preprocess: {preprocess}. Must be 'crop', 'resize', or 'full'")
+            raise ValueError(
+                f"Invalid preprocess: {preprocess}. Must be 'crop', 'resize', or 'full'"
+            )
 
         if not 0.0 <= expression_scale <= 2.0:
-            raise ValueError(f"Invalid expression_scale: {expression_scale}. Must be between 0.0 and 2.0")
+            raise ValueError(
+                f"Invalid expression_scale: {expression_scale}. Must be between 0.0 and 2.0"
+            )
 
         if model_path and not os.path.exists(model_path):
             raise FileNotFoundError(f"Model checkpoint not found: {model_path}")
@@ -76,8 +79,8 @@ class SadTalkerModel:
         self.still_mode = still_mode
         self.preprocess = preprocess
         self.expression_scale = expression_scale
-        self._model = None
-        self._face_detector = None
+        self._model: Optional[str] = None
+        self._face_detector: Optional[str] = None
 
     def _load_model(self) -> None:
         """Load SadTalker model (lazy loading)."""
@@ -96,9 +99,7 @@ class SadTalkerModel:
 
         self._face_detector = "mock_detector"
 
-    def detect_faces(
-        self, image: np.ndarray
-    ) -> list[Tuple[int, int, int, int]]:
+    def detect_faces(self, image: np.ndarray) -> list[Tuple[int, int, int, int]]:
         """
         Detect faces in an image.
 
@@ -221,16 +222,14 @@ class SadTalkerModel:
 
         return frames
 
-    def _save_video(
-        self, frames: list[np.ndarray], audio_path: str, output_path: str
-    ) -> None:
+    def _save_video(self, frames: list[np.ndarray], audio_path: str, output_path: str) -> None:
         """Save frames as video with audio."""
         if not frames:
             raise ValueError("No frames to save")
 
         h, w = frames[0].shape[:2]
 
-        fourcc = cv2.VideoWriter_fourcc(*"mp4v")
+        fourcc = cv2.VideoWriter.fourcc(*"mp4v")  # type: ignore[attr-defined]
         out = cv2.VideoWriter(output_path, fourcc, self.fps, (w, h))
 
         for frame in frames:
@@ -245,4 +244,3 @@ class SadTalkerModel:
         self._face_detector = None
         if torch.cuda.is_available():
             torch.cuda.empty_cache()
-

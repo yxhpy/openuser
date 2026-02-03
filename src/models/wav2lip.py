@@ -7,8 +7,7 @@ lip-synced videos from static images or videos and audio files.
 
 import os
 import tempfile
-from pathlib import Path
-from typing import Optional, Tuple, Union
+from typing import Optional, Tuple
 
 import cv2
 import numpy as np
@@ -70,8 +69,8 @@ class Wav2LipModel:
         self.wav2lip_batch_size = wav2lip_batch_size
         self.fps = fps
         self.resize_factor = resize_factor
-        self._model = None
-        self._face_detector = None
+        self._model: Optional[str] = None
+        self._face_detector: Optional[str] = None
 
     def _load_model(self) -> None:
         """Load Wav2Lip model (lazy loading)."""
@@ -90,9 +89,7 @@ class Wav2LipModel:
 
         self._face_detector = "mock_detector"
 
-    def detect_faces(
-        self, image: np.ndarray
-    ) -> list[Tuple[int, int, int, int]]:
+    def detect_faces(self, image: np.ndarray) -> list[Tuple[int, int, int, int]]:
         """
         Detect faces in an image.
 
@@ -216,9 +213,7 @@ class Wav2LipModel:
 
         return frames
 
-    def _process_frames(
-        self, frames: list[np.ndarray], audio_path: str
-    ) -> list[np.ndarray]:
+    def _process_frames(self, frames: list[np.ndarray], audio_path: str) -> list[np.ndarray]:
         """Process frames with Wav2Lip model."""
         output_frames = []
 
@@ -227,16 +222,14 @@ class Wav2LipModel:
 
         return output_frames
 
-    def _save_video(
-        self, frames: list[np.ndarray], audio_path: str, output_path: str
-    ) -> None:
+    def _save_video(self, frames: list[np.ndarray], audio_path: str, output_path: str) -> None:
         """Save frames as video with audio."""
         if not frames:
             raise ValueError("No frames to save")
 
         h, w = frames[0].shape[:2]
 
-        fourcc = cv2.VideoWriter_fourcc(*"mp4v")
+        fourcc = cv2.VideoWriter.fourcc(*"mp4v")  # type: ignore[attr-defined]
         out = cv2.VideoWriter(output_path, fourcc, self.fps, (w, h))
 
         for frame in frames:

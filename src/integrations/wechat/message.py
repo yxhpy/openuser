@@ -11,8 +11,8 @@ Parses different types of messages from WeChat Work, including:
 """
 
 from dataclasses import dataclass
-from typing import Optional, List, Dict, Any
 from enum import Enum
+from typing import Any, Dict, List, Optional
 
 
 class MessageType(Enum):
@@ -152,7 +152,6 @@ class WeChatMessageParser:
         if message.msg_type != MessageType.TEXT or not message.content:
             return []
 
-        mentions = []
         content = message.content
 
         # WeChat Work mentions format: @username

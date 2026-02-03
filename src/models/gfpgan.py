@@ -7,8 +7,7 @@ face quality in images and videos.
 
 import os
 import tempfile
-from pathlib import Path
-from typing import Optional, Tuple, Union
+from typing import Optional, Tuple
 
 import cv2
 import numpy as np
@@ -72,8 +71,8 @@ class GFPGANModel:
         self.upscale_factor = upscale_factor
         self.bg_upsampler = bg_upsampler
         self.face_size = face_size
-        self._model = None
-        self._face_detector = None
+        self._model: Optional[str] = None
+        self._face_detector: Optional[str] = None
 
     def _load_model(self) -> None:
         """Load GFPGAN model (lazy loading)."""
@@ -92,9 +91,7 @@ class GFPGANModel:
 
         self._face_detector = "mock_detector"
 
-    def detect_faces(
-        self, image: np.ndarray
-    ) -> list[Tuple[int, int, int, int]]:
+    def detect_faces(self, image: np.ndarray) -> list[Tuple[int, int, int, int]]:
         """
         Detect faces in an image.
 
@@ -239,7 +236,7 @@ class GFPGANModel:
 
             enhanced[y : y + h, x : x + w] = cv2.resize(face_region, (w, h))
 
-        return enhanced
+        return np.array(enhanced)
 
     def _extract_video_frames(self, video_path: str) -> list[np.ndarray]:
         """Extract frames from video file."""
@@ -260,16 +257,14 @@ class GFPGANModel:
 
         return frames
 
-    def _save_video(
-        self, frames: list[np.ndarray], output_path: str, fps: int
-    ) -> None:
+    def _save_video(self, frames: list[np.ndarray], output_path: str, fps: int) -> None:
         """Save frames as video."""
         if not frames:
             raise ValueError("No frames to save")
 
         h, w = frames[0].shape[:2]
 
-        fourcc = cv2.VideoWriter_fourcc(*"mp4v")
+        fourcc = cv2.VideoWriter.fourcc(*"mp4v")  # type: ignore[attr-defined]
         out = cv2.VideoWriter(output_path, fourcc, fps, (w, h))
 
         for frame in frames:
@@ -284,4 +279,3 @@ class GFPGANModel:
         self._face_detector = None
         if torch.cuda.is_available():
             torch.cuda.empty_cache()
-

@@ -8,13 +8,14 @@ This module handles:
 """
 
 import json
-from typing import Dict, Any, Optional, List
 from dataclasses import dataclass
 from enum import Enum
+from typing import Any, Callable, Dict, List, Union
 
 
 class FeishuMessageType(str, Enum):
     """Feishu message types."""
+
     TEXT = "text"
     POST = "post"
     IMAGE = "image"
@@ -72,7 +73,7 @@ class FeishuMessageParser:
         """
         try:
             content = json.loads(content_str)
-            return content.get("text", "")
+            return str(content.get("text", ""))
         except json.JSONDecodeError:
             return content_str
 
@@ -88,7 +89,7 @@ class FeishuMessageParser:
         """
         try:
             content = json.loads(content_str)
-            return content
+            return dict(content) if isinstance(content, dict) else {"text": content_str}
         except json.JSONDecodeError:
             return {"text": content_str}
 
@@ -104,9 +105,7 @@ class FeishuMessageParser:
         """
         try:
             content = json.loads(content_str)
-            return {
-                "image_key": content.get("image_key", "")
-            }
+            return {"image_key": content.get("image_key", "")}
         except json.JSONDecodeError:
             return {"image_key": ""}
 
@@ -124,7 +123,7 @@ class FeishuMessageParser:
             content = json.loads(content_str)
             return {
                 "file_key": content.get("file_key", ""),
-                "file_name": content.get("file_name", "")
+                "file_name": content.get("file_name", ""),
             }
         except json.JSONDecodeError:
             return {"file_key": "", "file_name": ""}
@@ -141,18 +140,11 @@ class FeishuMessageParser:
         """
         try:
             content = json.loads(content_str)
-            return {
-                "file_key": content.get("file_key", ""),
-                "duration": content.get("duration", 0)
-            }
+            return {"file_key": content.get("file_key", ""), "duration": content.get("duration", 0)}
         except json.JSONDecodeError:
             return {"file_key": "", "duration": 0}
 
-    def parse_content(
-        self,
-        message_type: str,
-        content_str: str
-    ) -> Any:
+    def parse_content(self, message_type: str, content_str: str) -> Any:
         """Parse message content based on type.
 
         Args:
@@ -162,7 +154,7 @@ class FeishuMessageParser:
         Returns:
             Parsed content
         """
-        parsers = {
+        parsers: dict[str, Callable[[str], Union[str, dict[str, Any]]]] = {
             FeishuMessageType.TEXT: self.parse_text_content,
             FeishuMessageType.POST: self.parse_post_content,
             FeishuMessageType.IMAGE: self.parse_image_content,
@@ -215,7 +207,7 @@ class FeishuMessageParser:
             chat_type=chat_type,
             create_time=create_time,
             mentions=mentions,
-            raw_content=content_str
+            raw_content=content_str,
         )
 
     def extract_mentions(self, message: FeishuMessage) -> List[str]:

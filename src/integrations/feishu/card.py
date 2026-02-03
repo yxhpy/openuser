@@ -8,12 +8,13 @@ This module provides:
 """
 
 import json
-from typing import Dict, Any, List, Optional
 from enum import Enum
+from typing import Any, Dict, List, Optional
 
 
 class CardElementType(str, Enum):
     """Card element types."""
+
     DIV = "div"
     HR = "hr"
     IMG = "img"
@@ -24,6 +25,7 @@ class CardElementType(str, Enum):
 
 class ButtonType(str, Enum):
     """Button types."""
+
     DEFAULT = "default"
     PRIMARY = "primary"
     DANGER = "danger"
@@ -35,35 +37,24 @@ class FeishuCardBuilder:
     Provides fluent API for building rich interactive cards.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize card builder."""
-        self.config = {
-            "wide_screen_mode": True
-        }
+        self.config = {"wide_screen_mode": True}
         self.header: Optional[Dict[str, Any]] = None
         self.elements: List[Dict[str, Any]] = []
 
-    def set_header(
-        self,
-        title: str,
-        template: str = "blue"
-    ) -> "FeishuCardBuilder":
+    def set_header(self, title: str, template: str = "blue") -> "FeishuCardBuilder":
         """Set card header.
 
         Args:
             title: Header title
-            template: Color template (blue, wathet, turquoise, green, yellow, orange, red, carmine, violet, purple, indigo, grey)
+            template: Color template (blue, wathet, turquoise, green, yellow,
+                orange, red, carmine, violet, purple, indigo, grey)
 
         Returns:
             Self for chaining
         """
-        self.header = {
-            "title": {
-                "tag": "plain_text",
-                "content": title
-            },
-            "template": template
-        }
+        self.header = {"title": {"tag": "plain_text", "content": title}, "template": template}
         return self
 
     def add_markdown(self, content: str) -> "FeishuCardBuilder":
@@ -75,10 +66,7 @@ class FeishuCardBuilder:
         Returns:
             Self for chaining
         """
-        self.elements.append({
-            "tag": "markdown",
-            "content": content
-        })
+        self.elements.append({"tag": "markdown", "content": content})
         return self
 
     def add_divider(self) -> "FeishuCardBuilder":
@@ -87,16 +75,11 @@ class FeishuCardBuilder:
         Returns:
             Self for chaining
         """
-        self.elements.append({
-            "tag": "hr"
-        })
+        self.elements.append({"tag": "hr"})
         return self
 
     def add_image(
-        self,
-        img_key: str,
-        alt: Optional[str] = None,
-        title: Optional[str] = None
+        self, img_key: str, alt: Optional[str] = None, title: Optional[str] = None
     ) -> "FeishuCardBuilder":
         """Add image element.
 
@@ -108,10 +91,7 @@ class FeishuCardBuilder:
         Returns:
             Self for chaining
         """
-        element = {
-            "tag": "img",
-            "img_key": img_key
-        }
+        element: Dict[str, Any] = {"tag": "img", "img_key": img_key}
         if alt:
             element["alt"] = {"tag": "plain_text", "content": alt}
         if title:
@@ -125,7 +105,7 @@ class FeishuCardBuilder:
         text: str,
         value: Dict[str, Any],
         button_type: str = ButtonType.DEFAULT,
-        url: Optional[str] = None
+        url: Optional[str] = None,
     ) -> "FeishuCardBuilder":
         """Add button element.
 
@@ -140,28 +120,19 @@ class FeishuCardBuilder:
         """
         button = {
             "tag": "button",
-            "text": {
-                "tag": "plain_text",
-                "content": text
-            },
+            "text": {"tag": "plain_text", "content": text},
             "type": button_type,
-            "value": value
+            "value": value,
         }
 
         if url:
             button["url"] = url
 
         # Wrap in action element
-        self.elements.append({
-            "tag": "action",
-            "actions": [button]
-        })
+        self.elements.append({"tag": "action", "actions": [button]})
         return self
 
-    def add_buttons(
-        self,
-        buttons: List[Dict[str, Any]]
-    ) -> "FeishuCardBuilder":
+    def add_buttons(self, buttons: List[Dict[str, Any]]) -> "FeishuCardBuilder":
         """Add multiple buttons in a row.
 
         Args:
@@ -174,21 +145,15 @@ class FeishuCardBuilder:
         for btn in buttons:
             button = {
                 "tag": "button",
-                "text": {
-                    "tag": "plain_text",
-                    "content": btn["text"]
-                },
+                "text": {"tag": "plain_text", "content": btn["text"]},
                 "type": btn.get("type", ButtonType.DEFAULT),
-                "value": btn["value"]
+                "value": btn["value"],
             }
             if "url" in btn:
                 button["url"] = btn["url"]
             actions.append(button)
 
-        self.elements.append({
-            "tag": "action",
-            "actions": actions
-        })
+        self.elements.append({"tag": "action", "actions": actions})
         return self
 
     def add_note(self, content: str) -> "FeishuCardBuilder":
@@ -200,22 +165,12 @@ class FeishuCardBuilder:
         Returns:
             Self for chaining
         """
-        self.elements.append({
-            "tag": "note",
-            "elements": [
-                {
-                    "tag": "plain_text",
-                    "content": content
-                }
-            ]
-        })
+        self.elements.append(
+            {"tag": "note", "elements": [{"tag": "plain_text", "content": content}]}
+        )
         return self
 
-    def add_field(
-        self,
-        fields: List[Dict[str, str]],
-        is_short: bool = True
-    ) -> "FeishuCardBuilder":
+    def add_field(self, fields: List[Dict[str, str]], is_short: bool = True) -> "FeishuCardBuilder":
         """Add field element (key-value pairs).
 
         Args:
@@ -227,18 +182,14 @@ class FeishuCardBuilder:
         """
         field_elements = []
         for field in fields:
-            field_elements.append({
-                "is_short": is_short,
-                "text": {
-                    "tag": "lark_md",
-                    "content": f"**{field['name']}**\n{field['value']}"
+            field_elements.append(
+                {
+                    "is_short": is_short,
+                    "text": {"tag": "lark_md", "content": f"**{field['name']}**\n{field['value']}"},
                 }
-            })
+            )
 
-        self.elements.append({
-            "tag": "div",
-            "fields": field_elements
-        })
+        self.elements.append({"tag": "div", "fields": field_elements})
         return self
 
     def build(self) -> str:
@@ -247,10 +198,7 @@ class FeishuCardBuilder:
         Returns:
             JSON string of card content
         """
-        card = {
-            "config": self.config,
-            "elements": self.elements
-        }
+        card = {"config": self.config, "elements": self.elements}
 
         if self.header:
             card["header"] = self.header
