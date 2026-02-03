@@ -310,6 +310,12 @@
       "decision": "Implemented unified video generation pipeline",
       "rationale": "Phase 2.2 completion - VideoGenerator provides a unified interface to orchestrate all digital human components (voice synthesis, Wav2Lip, GFPGAN, SadTalker). Simplifies the process of creating digital human videos with different quality levels and modes.",
       "impact": "VideoGenerator module with 100% test coverage. Supports 4 generation modes (lipsync, talking head, enhanced lipsync, enhanced talking head), text-to-video and audio-to-video generation, component orchestration, and automatic cleanup. Phase 2.2 Face Animation is now complete."
+    },
+    {
+      "date": "2026-02-03",
+      "decision": "Added pre-commit hook for automatic TypeScript type generation",
+      "rationale": "Phase 8.3 completion - Ensures frontend-backend type consistency by automatically regenerating TypeScript types from Pydantic schemas when API schemas change. Prevents API contract drift and reduces manual maintenance.",
+      "impact": "Pre-commit hook configured in .pre-commit-config.yaml. When src/api/schemas.py is modified, TypeScript types are automatically regenerated in frontend/src/types/generated.ts. Phase 8.3 API Contract Validation is now complete."
     }
   ],
   "techStack": {
@@ -351,6 +357,6 @@
       "mypy"
     ]
   },
-  "currentPhase": "Phase 2: Digital Human Engine - Face Animation (Completed)",
-  "nextMilestone": "Phase 2.3: Model Management"
+  "currentPhase": "Phase 8: Testing & Documentation",
+  "nextMilestone": "Phase 8.3: API Contract Validation (Completed) - Next: Frontend Component Tests or Performance Tests"
 }

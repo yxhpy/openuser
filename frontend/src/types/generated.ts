@@ -5,7 +5,7 @@
  * Run `python scripts/generate_types.py` to regenerate.
  *
  * Source: src/api/schemas.py
- * Generated: 2026-02-03T10:29:19.409742
+ * Generated: 2026-02-03T15:25:27.782597
  */
 
 /**
@@ -114,6 +114,12 @@ export interface UserResponse {
 
 /**
  * Request schema for creating a digital human.
+
+Note: The actual API endpoint accepts multipart/form-data with:
+- name: str (Form field)
+- description: Optional[str] (Form field)
+- image: UploadFile (File upload)
+- voice_model_path: Optional[str] (Form field)
  */
 export interface DigitalHumanCreateRequest {
   name?: string;
@@ -147,6 +153,12 @@ export interface DigitalHumanListResponse {
 
 /**
  * Request schema for video generation.
+
+Note: The actual API endpoint accepts multipart/form-data with:
+- digital_human_id: int (Form field)
+- text: Optional[str] (Form field, for text-to-video)
+- audio: Optional[UploadFile] (File upload, for audio-to-video)
+- mode: str (Form field, default: "enhanced_talking_head")
  */
 export interface VideoGenerateRequest {
   digital_human_id?: number;

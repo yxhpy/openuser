@@ -130,7 +130,17 @@ cd /Users/yxhpy/PycharmProjects/openuser
 python -m venv venv
 source venv/bin/activate
 pip install -e ".[dev]"
+pre-commit install  # Install pre-commit hooks
 ```
+
+### Pre-commit Hooks
+The project uses pre-commit hooks to ensure code quality:
+- **Code formatting**: Black, isort
+- **Linting**: flake8
+- **Type checking**: mypy
+- **Type generation**: Automatically generates TypeScript types from Pydantic schemas
+
+When you modify `src/api/schemas.py`, the pre-commit hook will automatically regenerate `frontend/src/types/generated.ts`. If types are regenerated, you'll need to stage the generated file and commit again.
 
 ### Start Development
 ```bash
