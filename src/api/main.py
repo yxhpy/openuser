@@ -13,6 +13,7 @@ from src.api.digital_human import router as digital_human_router
 from src.api.plugins import router as plugins_router
 from src.api.agents import router as agents_router
 from src.api.scheduler import router as scheduler_router
+from src.api.scheduler_monitor import router as scheduler_monitor_router
 from src.api.websocket import router as websocket_router
 from src.models.base import DatabaseManager
 
@@ -65,6 +66,7 @@ def create_app() -> FastAPI:
     app.include_router(plugins_router)
     app.include_router(agents_router)
     app.include_router(scheduler_router)
+    app.include_router(scheduler_monitor_router)
     app.include_router(websocket_router)
 
     @app.get("/")
