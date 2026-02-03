@@ -1,3 +1,10 @@
+## [1.1.1](https://github.com/yxhpy/openuser/compare/v1.1.0...v1.1.1) (2026-02-03)
+
+
+### Bug Fixes
+
+* Increase timeout for slow SchedulerPage tests ([4847da2](https://github.com/yxhpy/openuser/commit/4847da24780bc1dbdf9c97ef2147315f2f6e7732))
+
 # [1.1.0](https://github.com/yxhpy/openuser/compare/v1.0.0...v1.1.0) (2026-02-03)
 
 
