@@ -123,9 +123,9 @@
 - [x] User dashboard
 - [x] Digital human creation wizard
 - [x] Frontend testing framework (Vitest + RTL + MSW) - 2026-02-03
-- [x] Frontend unit tests (63 tests, 100% coverage) - 2026-02-03
+- [x] Frontend unit tests (81 tests passing) - 2026-02-03
 - [x] API type generation from Pydantic schemas - 2026-02-03
-- [ ] Plugin management UI
+- [x] Plugin management UI - 2026-02-03
 - [ ] Task scheduler UI
 - [ ] E2E tests with Playwright
 - [x] Fix API inconsistencies (6 issues documented) - 2026-02-03
