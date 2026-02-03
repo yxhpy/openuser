@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/yxhpy/openuser/compare/v1.0.0...v1.1.0) (2026-02-03)
+
+
+### Features
+
+* Complete Phase 9.3 - Monitoring and observability infrastructure ([ebde02d](https://github.com/yxhpy/openuser/commit/ebde02dc438dbc86123e0aafccaa4fc1f5304d60))
+
 # 1.0.0 (2026-02-03)
 
 
