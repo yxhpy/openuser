@@ -172,12 +172,15 @@
 - [x] Configure MSW for API mocking
 - [x] Create test utilities and setup
 - [x] Add sample tests (auth API)
-- [x] Write component tests (DashboardPage, PluginsPage, SchedulerPage) - 2026-02-03
-- [x] Write component tests (AgentsPage, Digital Human pages) - 2026-02-03
-- [ ] Write integration tests
-- [ ] Write integration tests
+- [x] Write API integration tests (17 test cases) - 2026-02-03
+- [ ] Implement frontend API client modules (auth, digitalHuman, plugins)
+- [ ] Implement frontend pages (Login, Register, Dashboard, etc.)
+- [ ] Write component tests for implemented pages
+- [ ] Write UI integration tests (user flows across pages)
 - [ ] Add E2E tests with Playwright
 - [ ] Achieve 80% coverage target
+
+**Note**: Frontend implementation is minimal. Only test infrastructure exists. See `docs/testing/FRONTEND_INTEGRATION_TESTS.md` for details.
 
 ### 8.3 API Contract Validation (NEW - 2026-02-03)
 - [x] Analyze frontend-backend API inconsistencies
