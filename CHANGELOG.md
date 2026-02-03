@@ -1,3 +1,17 @@
+# [1.2.0](https://github.com/yxhpy/openuser/compare/v1.1.1...v1.2.0) (2026-02-03)
+
+
+### Bug Fixes
+
+* Correct nginx proxy and frontend API base URL configuration ([5cf0891](https://github.com/yxhpy/openuser/commit/5cf0891adf4fa957db195eaf0b4920611a41dfc1))
+* Use DATABASE_URL environment variable instead of hardcoded SQLite ([eb57490](https://github.com/yxhpy/openuser/commit/eb5749095fb1bd422fbc31e64ca9cf8e19979339))
+
+
+### Features
+
+* Add Docker deployment support with simplified dependencies ([ba44d89](https://github.com/yxhpy/openuser/commit/ba44d89a0101688644f1ffdb0804f0271861b480))
+* Add frontend Docker deployment with nginx reverse proxy ([de5de08](https://github.com/yxhpy/openuser/commit/de5de08b95efb4680bc50a532c1c912a598f9cac))
+
 ## [1.1.1](https://github.com/yxhpy/openuser/compare/v1.1.0...v1.1.1) (2026-02-03)
 
 
